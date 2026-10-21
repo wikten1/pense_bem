@@ -4,9 +4,10 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { StartupVideo } from '@/components/startup-video';
 import { GameProvider } from '@/state/GameProvider';
 import { colors } from '@/theme/tokens';
 
@@ -18,33 +19,37 @@ export default function RootLayout() {
     Cinzel_600SemiBold,
     Cinzel_700Bold,
   });
+  const [introHeld, setIntroHeld] = useState(false);
+  const appReady = loaded || error;
+  const showIntro = !introHeld || !appReady;
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(colors.background);
   }, []);
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
+  const hideSplash = useCallback(() => {
+    SplashScreen.hideAsync();
+  }, []);
 
-  if (!loaded && !error) {
-    return null;
-  }
+  const finishIntro = useCallback(() => {
+    setIntroHeld(true);
+  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
-      <GameProvider>
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.background },
-            animation: 'fade',
-          }}
-        />
-      </GameProvider>
+      {appReady ? (
+        <GameProvider>
+          <StatusBar style="light" hidden={showIntro} />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.background },
+              animation: 'fade',
+            }}
+          />
+        </GameProvider>
+      ) : null}
+      {showIntro ? <StartupVideo onReady={hideSplash} onFinish={finishIntro} /> : null}
     </GestureHandlerRootView>
   );
 }
