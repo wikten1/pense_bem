@@ -481,6 +481,23 @@ export function programIdByNumber(programNumber: number): string | undefined {
   return ALADDIN_PROGRAMS.find((program) => program.number === programNumber)?.id;
 }
 
+function compactEntry(value: string): string {
+  return value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+export function findProgramByEntryCode(raw: string): Program | undefined {
+  const compact = compactEntry(raw);
+  if (!compact) {
+    return undefined;
+  }
+  return ALADDIN_PROGRAMS.find((program) => {
+    const tokens = program.entryCode.map(compactEntry).filter(Boolean);
+    const digits = tokens.filter((token) => /^\d+$/.test(token)).join('');
+    const accepted = new Set([tokens.join(''), digits, `LIVRO${digits}`, `${digits}ENTER`, `LIVRO${digits}ENTER`]);
+    return accepted.has(compact);
+  });
+}
+
 export function buildQuiz(programId: string, seed: number): Question[] | null {
   const program = findProgram(programId);
   if (!program) {

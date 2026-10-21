@@ -8,6 +8,7 @@ import {
   createPassword,
   createSession,
   emptyLedger,
+  findProgramByEntryCode,
   goToNext,
   notaDesafio,
   parsePassword,
@@ -168,4 +169,13 @@ test('revista do Aladdin está catalogada sem transcrever perguntas nem inventar
   assert.ok(audit.some((issue) => issue.includes('gabarito')));
   assert.ok(audit.some((issue) => issue.includes('0 transcritas')));
   assert.equal(PRACTICE_PROGRAM.questions.length, 3);
+});
+
+test('código do livro encontra o programa de 1 a 6', () => {
+  assert.equal(findProgramByEntryCode('041')?.number, 1);
+  assert.equal(findProgramByEntryCode('0 4 6')?.id, 'p6');
+  assert.equal(findProgramByEntryCode('livro 0 4 3 enter')?.number, 3);
+  assert.equal(findProgramByEntryCode('LIVRO045ENTER')?.id, 'p5');
+  assert.equal(findProgramByEntryCode('1'), undefined);
+  assert.equal(findProgramByEntryCode('099'), undefined);
 });
