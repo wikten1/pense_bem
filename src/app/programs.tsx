@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { BackLink, GoldButton, NightScreen, Panel } from '@/components/game/ui';
+import { IntroBackground, useScreenViewport } from '@/components/intro-background';
 import { ALADDIN_PROGRAMS, PRACTICE_PROGRAM, findProgramByEntryCode } from '@/game/rules';
 import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
@@ -11,6 +12,7 @@ export default function ProgramsScreen() {
   const { bestScore, history, startProgram, session } = useGame();
   const [code, setCode] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
+  const { viewport, onLayout } = useScreenViewport();
 
   function openProgram(programId: string) {
     if (session?.status === 'in_progress' && session.programId === programId) {
@@ -35,7 +37,7 @@ export default function ProgramsScreen() {
   }
 
   return (
-    <NightScreen>
+    <NightScreen backdrop={<IntroBackground viewport={viewport} />} onLayout={onLayout}>
       <BackLink label="Início" onPress={() => router.back()} />
       <Text style={styles.title}>Programas</Text>
       <ScrollView contentContainerStyle={styles.list} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>

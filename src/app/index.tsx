@@ -1,85 +1,12 @@
-import { router, useFocusEffect } from 'expo-router';
-import { useVideoPlayer, VideoView } from 'expo-video';
-import { useCallback, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GoldButton, NightScreen } from '@/components/game/ui';
+import { IntroBackground, LOGO_BOTTOM, useScreenViewport, videoFrame, type Viewport } from '@/components/intro-background';
 import { findProgram } from '@/game/rules';
 import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
-
-const source = require('../../assets/videos/background_intro.mp4');
-
-const VIDEO_WIDTH = 720;
-const VIDEO_HEIGHT = 1280;
-/** Bottom of the Aladdin logo drawn in background_intro.mp4. */
-const LOGO_BOTTOM = 0.392;
-/** The logo flourish starts about 4.4% in from the frame edge. */
-const LOGO_SIDE_MARGIN = 0.03;
-
-function videoFrame(screenWidth: number, screenHeight: number) {
-  const videoAspect = VIDEO_WIDTH / VIDEO_HEIGHT;
-  const widthFit = screenWidth;
-  const heightFit = screenWidth / videoAspect;
-  const coverWidth = screenHeight * videoAspect;
-  const coverHeight = screenHeight;
-  const safeWidth = screenWidth / (1 - LOGO_SIDE_MARGIN * 2);
-  const safeHeight = safeWidth / videoAspect;
-  const width = Math.min((widthFit + coverWidth) / 2, safeWidth);
-  const height = Math.min((heightFit + coverHeight) / 2, safeHeight);
-  const spare = Math.max(0, screenHeight - height);
-
-  return {
-    top: spare,
-    left: (screenWidth - width) / 2,
-    width,
-    height,
-  };
-}
-
-type Viewport = { width: number; height: number };
-
-function HomeBackground({ viewport }: { viewport: Viewport | null }) {
-  const frame = viewport ? videoFrame(viewport.width, viewport.height) : null;
-  const player = useVideoPlayer(source, (video) => {
-    video.muted = true;
-    video.volume = 0;
-    video.loop = true;
-    video.keepScreenOnWhilePlaying = false;
-    if (Platform.OS !== 'web') {
-      video.audioMixingMode = 'mixWithOthers';
-      video.showNowPlayingNotification = false;
-    }
-    video.play();
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      player.play();
-      return () => {
-        player.pause();
-      };
-    }, [player]),
-  );
-
-  return (
-    <>
-      <View pointerEvents="none" style={styles.sky} />
-      <VideoView
-        player={player}
-        style={frame ? [styles.video, frame] : styles.videoHidden}
-        contentFit="contain"
-        surfaceType="textureView"
-        nativeControls={false}
-        allowsPictureInPicture={false}
-        allowsVideoFrameAnalysis={false}
-        playsInline
-        pointerEvents="none"
-      />
-    </>
-  );
-}
 
 function HomeLead({ viewport }: { viewport: Viewport }) {
   const insets = useSafeAreaInsets();
@@ -96,17 +23,10 @@ function HomeLead({ viewport }: { viewport: Viewport }) {
 export default function HomeScreen() {
   const { ready, persistent, session } = useGame();
   const current = session?.status === 'in_progress' ? findProgram(session.programId) : undefined;
-  const [viewport, setViewport] = useState<Viewport | null>(null);
-
-  const onLayout = useCallback((event: { nativeEvent: { layout: Viewport } }) => {
-    const { width, height } = event.nativeEvent.layout;
-    setViewport((currentViewport) =>
-      currentViewport?.width === width && currentViewport.height === height ? currentViewport : { width, height },
-    );
-  }, []);
+  const { viewport, onLayout } = useScreenViewport();
 
   return (
-    <NightScreen backdrop={<HomeBackground viewport={viewport} />} overlay={viewport ? <HomeLead viewport={viewport} /> : null} onLayout={onLayout}>
+    <NightScreen backdrop={<IntroBackground viewport={viewport} />} overlay={viewport ? <HomeLead viewport={viewport} /> : null} onLayout={onLayout}>
       <ScrollView style={styles.fill} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.actions}>
           {current && session ? (
@@ -132,22 +52,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   fill: {
     flex: 1,
-  },
-  sky: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: '#0B1A41',
-  },
-  video: {
-    position: 'absolute',
-  },
-  videoHidden: {
-    position: 'absolute',
-    width: 0,
-    height: 0,
   },
   scroll: {
     flexGrow: 1,
