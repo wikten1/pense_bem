@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { ChoiceId } from '@/game/rules';
@@ -9,28 +9,36 @@ import { colors, fonts, space } from '@/theme/tokens';
 export function NightScreen({
   children,
   background,
+  backdrop,
+  overlay,
+  onLayout,
 }: {
   children: ReactNode;
   background?: 'image' | 'gradient';
+  backdrop?: ReactNode;
+  overlay?: ReactNode;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={styles.fill}>
-      {background === 'image' ? (
-        <>
-          <Image
-            source={require('../../../assets/images/home-background.png')}
-            style={StyleSheet.absoluteFill}
-            contentFit="cover"
-          />
-          <View style={styles.imageScrim} />
-        </>
-      ) : (
-        <>
-          <View style={styles.nightFill} />
-          <View style={styles.duskBand} />
-        </>
-      )}
+    <View style={styles.fill} onLayout={onLayout}>
+      {backdrop ??
+        (background === 'image' ? (
+          <>
+            <Image
+              source={require('../../../assets/images/home-background.png')}
+              style={StyleSheet.absoluteFill}
+              contentFit="cover"
+            />
+            <View style={styles.imageScrim} />
+          </>
+        ) : (
+          <>
+            <View style={styles.nightFill} />
+            <View style={styles.duskBand} />
+          </>
+        ))}
+      {overlay}
       <View style={[styles.content, { paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space.md }]}>
         {children}
       </View>
@@ -154,6 +162,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    zIndex: 2,
     width: '100%',
     maxWidth: 760,
     alignSelf: 'center',

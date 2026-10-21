@@ -54,6 +54,7 @@ export function StartupVideo({ onReady, onFinish }: StartupVideoProps) {
         player={player}
         style={styles.video}
         contentFit="cover"
+        surfaceType="textureView"
         nativeControls={false}
         allowsPictureInPicture={false}
         playsInline
