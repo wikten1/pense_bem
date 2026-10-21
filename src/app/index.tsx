@@ -14,18 +14,28 @@ const source = require('../../assets/videos/background_intro.mp4');
 const VIDEO_WIDTH = 720;
 const VIDEO_HEIGHT = 1280;
 /** Bottom of the Aladdin logo drawn in background_intro.mp4. */
-const LOGO_BOTTOM = 0.391;
+const LOGO_BOTTOM = 0.392;
+/** The logo flourish starts about 4.4% in from the frame edge. */
+const LOGO_SIDE_MARGIN = 0.03;
 
 function videoFrame(screenWidth: number, screenHeight: number) {
   const videoAspect = VIDEO_WIDTH / VIDEO_HEIGHT;
-  if (screenWidth / screenHeight >= videoAspect) {
-    const height = screenHeight;
-    const width = height * videoAspect;
-    return { top: 0, left: (screenWidth - width) / 2, width, height };
-  }
-  const width = screenWidth;
-  const height = width / videoAspect;
-  return { top: (screenHeight - height) / 2, left: 0, width, height };
+  const widthFit = screenWidth;
+  const heightFit = screenWidth / videoAspect;
+  const coverWidth = screenHeight * videoAspect;
+  const coverHeight = screenHeight;
+  const safeWidth = screenWidth / (1 - LOGO_SIDE_MARGIN * 2);
+  const safeHeight = safeWidth / videoAspect;
+  const width = Math.min((widthFit + coverWidth) / 2, safeWidth);
+  const height = Math.min((heightFit + coverHeight) / 2, safeHeight);
+  const spare = Math.max(0, screenHeight - height);
+
+  return {
+    top: spare,
+    left: (screenWidth - width) / 2,
+    width,
+    height,
+  };
 }
 
 type Viewport = { width: number; height: number };

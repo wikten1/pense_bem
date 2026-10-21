@@ -130,6 +130,7 @@ export function Panel({ children, style }: { children: ReactNode; style?: StyleP
 const styles = StyleSheet.create({
   fill: {
     flex: 1,
+    overflow: 'hidden',
     backgroundColor: colors.background,
   },
   nightFill: {
