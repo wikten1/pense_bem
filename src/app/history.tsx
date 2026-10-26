@@ -63,6 +63,7 @@ export default function HistoryScreen() {
         {history.map((entry) => (
           <Panel key={entry.id}>
             <Text style={styles.cardTitle}>{entry.programTitle}</Text>
+            {entry.pending ? <Text style={styles.meta}>Resultado parcial · {entry.pending} pendentes de revisão</Text> : null}
             <Text style={styles.body}>
               {entry.score}/{entry.maxScore} pontos · {entry.correct} acertadas · {entry.missed} não acertadas · {entry.percent}%
             </Text>

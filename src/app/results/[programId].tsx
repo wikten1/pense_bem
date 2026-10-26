@@ -9,7 +9,7 @@ import { colors, fonts, space } from '@/theme/tokens';
 export default function ResultsScreen() {
   const { programId: rawId } = useLocalSearchParams<{ programId: string }>();
   const programId = Array.isArray(rawId) ? rawId[0] : rawId;
-  const { history, ledger, notaDesafio, redeem, startProgram } = useGame();
+  const { history, ledger, notaDesafio, redeem, startProgram, saveError } = useGame();
   const entry = history.find((item) => item.programId === programId);
   const program = programId ? findProgram(programId) : undefined;
   const canReplay = programId ? buildQuiz(programId, 1) !== null : false;
@@ -24,8 +24,9 @@ export default function ResultsScreen() {
   return (
     <NightScreen>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.kicker}>Resultado</Text>
+        <Text style={styles.kicker}>{entry?.pending ? 'Resultado parcial' : 'Resultado'}</Text>
         <Text style={styles.title}>{entry?.programTitle ?? program?.title ?? 'Programa'}</Text>
+        {saveError ? <Text accessibilityRole="alert" style={styles.body}>{saveError}</Text> : null}
         {entry ? (
           <Panel>
             <Text style={styles.score}>
@@ -37,6 +38,9 @@ export default function ResultsScreen() {
               <Stat label="Não acertadas" value={String(entry.missed)} />
               <Stat label="Aproveitamento" value={`${entry.percent}%`} />
             </View>
+            {entry.pending ? (
+              <Text style={styles.body}>{entry.pending} perguntas pendentes de revisão, sem contar como erro. A pontuação e o aproveitamento consideram apenas as perguntas com resposta validada.</Text>
+            ) : null}
             {entry.password ? (
               <>
                 <Text style={styles.label}>Senha desta partida</Text>
@@ -49,7 +53,7 @@ export default function ResultsScreen() {
                 />
               </>
             ) : (
-              <Text style={styles.body}>O treino não gera senha. A senha só existe para um programa da revista concluído com 30 perguntas.</Text>
+              <Text style={styles.body}>{entry.pending ? 'Este resultado parcial não gera senha nem selo de programa concluído.' : 'O treino não gera senha. A senha só existe para um programa da revista concluído com 30 perguntas avaliadas.'}</Text>
             )}
             <Text style={styles.label}>Nota Desafio</Text>
             <Text style={styles.nota}>{notaDesafio}</Text>
@@ -102,10 +106,12 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: space.sm,
   },
   stat: {
     flex: 1,
+    minWidth: 100,
     backgroundColor: colors.backgroundDeep,
     borderRadius: 14,
     padding: space.sm,

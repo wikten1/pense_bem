@@ -1,3 +1,6 @@
+import { questions as sourceQuestions } from '../content/aladdin.ts';
+import type { Illustration } from '../content/aladdin-visuals.ts';
+
 export const MAX_ATTEMPTS = 3;
 export const QUESTIONS_PER_PROGRAM = 30;
 export const MAX_POINTS = QUESTIONS_PER_PROGRAM * MAX_ATTEMPTS;
@@ -17,6 +20,10 @@ export type Question = {
   choices: Choice[];
   correctChoiceId: ChoiceId | null;
   reviewNotes?: string;
+  context?: string;
+  answerBasis?: string;
+  sourcePage?: number;
+  illustration?: Illustration;
 };
 
 export type SectionNote = {
@@ -48,6 +55,7 @@ export type QuestionState = {
   points: number;
   correct: boolean;
   chosenCorrect: ChoiceId | null;
+  pending?: boolean;
 };
 
 export type Session = {
@@ -80,6 +88,20 @@ export type RedeemResult =
   | { ok: false; reason: 'invalid' | 'duplicate' | 'unknown_program' | 'not_higher' };
 
 const CHOICE_ORDER: ChoiceId[] = ['red', 'yellow', 'blue', 'green'];
+const sourceColors: Record<string, ChoiceId> = { A: 'red', B: 'yellow', C: 'blue', D: 'green' };
+const magazineQuestions: Question[] = sourceQuestions.map((question) => ({
+  id: question.id,
+  programId: `p${question.programId}`,
+  number: question.number,
+  prompt: question.prompt,
+  choices: question.options.map((option) => ({ id: sourceColors[option.id], text: option.text })),
+  correctChoiceId: question.correctId ? sourceColors[question.correctId] : null,
+  context: question.context,
+  illustration: question.illustration,
+  sourcePage: question.sourcePage,
+  answerBasis: question.answerBasis ?? undefined,
+  reviewNotes: question.reviewNotes.join(' '),
+}));
 
 export function pointsForAttempt(attempt: number): number {
   if (attempt < 1 || attempt > MAX_ATTEMPTS) {
@@ -227,24 +249,26 @@ export function sessionStats(session: Session) {
   const correct = session.quiz.filter((question) => session.questions[question.id]?.correct).length;
   const missed = session.quiz.filter((question) => {
     const state = session.questions[question.id];
-    return state?.finished && !state.correct;
+    return state?.finished && !state.correct && !state.pending;
   }).length;
   const finished = session.quiz.filter((question) => session.questions[question.id]?.finished).length;
-  const maxScore = total * MAX_ATTEMPTS;
+  const pending = session.quiz.filter((question) => session.questions[question.id]?.pending).length;
+  const maxScore = session.quiz.filter((question) => question.correctChoiceId).length * MAX_ATTEMPTS;
   return {
     score,
     maxScore,
     correct,
     missed,
+    pending,
     finished,
     total,
     percent: maxScore === 0 ? 0 : Math.round((score / maxScore) * 100),
   };
 }
 
-export function applyAnswer(session: Session, choiceId: ChoiceId): { session: Session; event: AnswerEvent } {
+export function applyAnswer(session: Session, choiceId: ChoiceId, questionId = session.quiz[session.index]?.id): { session: Session; event: AnswerEvent } {
   const current = session.quiz[session.index];
-  if (!current || session.status === 'finished') {
+  if (!current || current.id !== questionId || session.status === 'finished') {
     return { session, event: { type: 'already_finished' } };
   }
   const state = session.questions[current.id] ?? blankState(current.id);
@@ -300,19 +324,30 @@ function replaceQuestion(session: Session, questionId: string, state: QuestionSt
   return { ...next, questions };
 }
 
-export function goToNext(session: Session, now: string): Session {
+export function acknowledgeReview(session: Session, questionId: string): Session {
   const current = session.quiz[session.index];
-  if (!current || !session.questions[current.id]?.finished || session.status === 'finished') {
+  if (!current || current.id !== questionId || current.correctChoiceId || session.status === 'finished') return session;
+  const state = session.questions[current.id];
+  if (!state || state.finished) return session;
+  return replaceQuestion(session, current.id, { ...state, finished: true, pending: true });
+}
+
+export function goToNext(session: Session, now: string, questionId = session.quiz[session.index]?.id): Session {
+  const current = session.quiz[session.index];
+  if (!current || current.id !== questionId || !session.questions[current.id]?.finished || session.status === 'finished') {
     return session;
   }
-  if (session.index >= session.quiz.length - 1) {
+  // Restored sessions may have scored questions after reopened review gaps.
+  const nextIndex = session.quiz.findIndex((question, index) => index > session.index && !session.questions[question.id]?.finished);
+  if (nextIndex === -1) {
     return {
       ...session,
+      index: session.quiz.length - 1,
       status: 'finished',
       finishedAt: now,
     };
   }
-  return { ...session, index: session.index + 1 };
+  return { ...session, index: nextIndex };
 }
 
 export function passwordFor(session: Session): string | null {
@@ -324,10 +359,74 @@ export function passwordFor(session: Session): string | null {
     return null;
   }
   const stats = sessionStats(session);
-  if (stats.total !== QUESTIONS_PER_PROGRAM || stats.finished !== QUESTIONS_PER_PROGRAM) {
+  if (stats.total !== QUESTIONS_PER_PROGRAM || stats.finished !== QUESTIONS_PER_PROGRAM || stats.pending > 0 || stats.maxScore !== MAX_POINTS) {
     return null;
   }
   return createPassword(program.number, stats.score);
+}
+
+// Rebuild attempts against the bundled catalog; persisted totals and answer keys are not trusted.
+export function restoreSession(value: unknown): Session {
+  const saved = value as Session;
+  if (!saved || typeof saved.id !== 'string' || !saved.id ||
+      typeof saved.startedAt !== 'string' || !Number.isFinite(Date.parse(saved.startedAt)) ||
+      !Number.isInteger(saved.index) || !Array.isArray(saved.quiz) || !saved.questions ||
+      !['in_progress', 'finished'].includes(saved.status)) {
+    throw new Error('Partida salva inválida.');
+  }
+  const catalog = buildQuiz(saved.programId, saved.seed ?? 1);
+  if (!catalog || saved.quiz.length !== catalog.length || saved.index < 0 || saved.index >= catalog.length ||
+      saved.quiz.some((question, index) => question.id !== catalog[index].id)) {
+    throw new Error('Sequência salva inválida.');
+  }
+  let rebuilt = { ...createSession(saved.programId, catalog, saved.startedAt, saved.seed), id: saved.id };
+  let firstReopened = saved.index;
+  for (let index = 0; index < catalog.length; index += 1) {
+    const question = catalog[index];
+    const entry = saved.questions[question.id];
+    if (!entry || !Array.isArray(entry.wrongChoices) || entry.wrongChoices.length > MAX_ATTEMPTS ||
+        new Set(entry.wrongChoices).size !== entry.wrongChoices.length) {
+      throw new Error('Tentativas salvas inválidas.');
+    }
+    rebuilt = { ...rebuilt, index };
+    for (const choice of entry.wrongChoices) {
+      const result = applyAnswer(rebuilt, choice);
+      if (result.event.type !== 'incorrect' && result.event.type !== 'failed') throw new Error('Tentativa inválida.');
+      rebuilt = result.session;
+    }
+    if (entry.chosenCorrect) {
+      const result = applyAnswer(rebuilt, entry.chosenCorrect);
+      if (result.event.type !== 'correct') throw new Error('Acerto inválido.');
+      rebuilt = result.session;
+    }
+    const resolvedPending = entry.pending && question.correctChoiceId;
+    if (resolvedPending) {
+      if (!entry.finished || entry.wrongChoices.length || entry.chosenCorrect || saved.quiz[index].correctChoiceId !== null) {
+        throw new Error('Pendência anterior inválida.');
+      }
+      if (saved.status === 'finished') {
+        // Historical skips remain partial; never award points retroactively.
+        rebuilt = replaceQuestion(rebuilt, question.id, { ...blankState(question.id), finished: true, pending: true });
+        rebuilt = { ...rebuilt, quiz: rebuilt.quiz.map((item) => item.id === question.id ? { ...item, correctChoiceId: null } : item) };
+      } else {
+        firstReopened = Math.min(firstReopened, index);
+      }
+    } else if (entry.pending) {
+      const next = acknowledgeReview(rebuilt, question.id);
+      if (next === rebuilt) throw new Error('Pendência inválida.');
+      rebuilt = next;
+    }
+    if (index < saved.index && !rebuilt.questions[question.id].finished && !resolvedPending) throw new Error('Questão anterior incompleta.');
+  }
+  rebuilt = { ...rebuilt, index: firstReopened };
+  if (saved.status === 'finished') {
+    if (saved.index !== catalog.length - 1 || !saved.finishedAt || !Number.isFinite(Date.parse(saved.finishedAt))) {
+      throw new Error('Resultado salvo inválido.');
+    }
+    rebuilt = goToNext(rebuilt, saved.finishedAt);
+    if (rebuilt.status !== 'finished') throw new Error('Resultado incompleto.');
+  }
+  return rebuilt;
 }
 
 function choice(id: ChoiceId, text: string): Choice {
@@ -380,7 +479,7 @@ export const ALADDIN_PROGRAMS: Program[] = [
     entryCode: ['LIVRO', '0', '4', '1', 'ENTER'],
     questionCount: 30,
     mode: 'sequence',
-    questions: [],
+    questions: magazineQuestions.filter((question) => question.programId === 'p1'),
     sections: [
       { title: 'Aladdin', from: 1, to: 6, needsIllustration: true },
       { title: 'A princesa Jasmine', from: 7, to: 14, needsIllustration: false },
@@ -388,7 +487,7 @@ export const ALADDIN_PROGRAMS: Program[] = [
       { title: 'A lâmpada maravilhosa', from: 21, to: 28, needsIllustration: true },
       { title: 'Fechamento da história', from: 29, to: 30, needsIllustration: false },
     ],
-    notes: 'Questões 1 a 30. Várias dependem da figura da página.',
+    notes: 'Questões 1 a 30, com respostas revisadas e ilustrações disponíveis no jogo.',
   },
   {
     id: 'p2',
@@ -397,7 +496,7 @@ export const ALADDIN_PROGRAMS: Program[] = [
     entryCode: ['LIVRO', '0', '4', '2', 'ENTER'],
     questionCount: 30,
     mode: 'sequence',
-    questions: [],
+    questions: magazineQuestions.filter((question) => question.programId === 'p2'),
     sections: [
       { title: 'As Mil e Uma Noites', from: 31, to: 36, needsIllustration: true },
       { title: 'O mundo árabe', from: 38, to: 44, needsIllustration: true },
@@ -405,7 +504,7 @@ export const ALADDIN_PROGRAMS: Program[] = [
       { title: 'Bagdá, a cidade encantada', from: 52, to: 57, needsIllustration: false },
       { title: 'Quadrado mágico', from: 58, to: 60, needsIllustration: false },
     ],
-    notes: 'Questões 31 a 60. A questão 37 não ficou isolada com segurança na leitura das páginas.',
+    notes: 'Questões 31 a 60, com respostas revisadas e ilustrações disponíveis no jogo.',
   },
   {
     id: 'p3',
@@ -414,7 +513,7 @@ export const ALADDIN_PROGRAMS: Program[] = [
     entryCode: ['LIVRO', '0', '4', '3', 'ENTER'],
     questionCount: 30,
     mode: 'sequence',
-    questions: [],
+    questions: magazineQuestions.filter((question) => question.programId === 'p3'),
     sections: [
       { title: 'Simbad, o marujo', from: 61, to: 67, needsIllustration: true },
       { title: 'O pássaro-gigante', from: 68, to: 73, needsIllustration: true },
@@ -430,7 +529,7 @@ export const ALADDIN_PROGRAMS: Program[] = [
     entryCode: ['LIVRO', '0', '4', '4', 'ENTER'],
     questionCount: 30,
     mode: 'sequence',
-    questions: [],
+    questions: magazineQuestions.filter((question) => question.programId === 'p4'),
     sections: [
       { title: 'Ali Babá e os quarenta ladrões', from: 91, to: 98, needsIllustration: true },
       { title: 'Descobrindo o segredo', from: 99, to: 104, needsIllustration: true },
@@ -446,7 +545,7 @@ export const ALADDIN_PROGRAMS: Program[] = [
     entryCode: ['LIVRO', '0', '4', '5', 'ENTER'],
     questionCount: 30,
     mode: 'sequence',
-    questions: [],
+    questions: magazineQuestions.filter((question) => question.programId === 'p5'),
     sections: [
       { title: 'O filme', from: 121, to: 126, needsIllustration: true },
       { title: 'Como se faz um filme', from: 127, to: 134, needsIllustration: false },
@@ -516,7 +615,7 @@ export function buildQuiz(programId: string, seed: number): Question[] | null {
   if (program.questions.length !== QUESTIONS_PER_PROGRAM) {
     return null;
   }
-  if (program.questions.some((question) => !question.correctChoiceId || question.choices.length !== 4)) {
+  if (program.questions.some((question) => question.choices.length !== 4)) {
     return null;
   }
   return program.questions;
@@ -551,15 +650,14 @@ export function auditAladdin(): string[] {
   }
   issues.push('O PDF não imprime gabarito.');
   issues.push('O PDF não descreve senha nem Nota Desafio.');
-  issues.push('A questão 37 não foi localizada com segurança.');
   return issues;
 }
 
 export const CONTENT_GAP =
-  'As perguntas da revista não entraram no aplicativo. O PDF não traz gabarito, boa parte das questões só faz sentido com a ilustração da página, e o texto é material protegido da Disney e da Editora Nova Cultural (1993).';
+  'As 150 perguntas foram revisadas e estão disponíveis para jogar, com ilustrações nas atividades visuais. Cada programa completo vale até 90 pontos.';
 
 export const SCORING_NOTE =
   'Na revista, quem joga sem o equipamento marca 1 ponto por acerto. O visor do brinquedo mostra a contagem ao final, sem imprimir a tabela. Este aplicativo usa a escala pedida para o equipamento: 3, 2 ou 1 ponto conforme a tentativa, e 0 se as três falharem. Máximo de 90 pontos por programa.';
 
 export const PASSWORD_NOTE =
-  'Regra nova, não descrita na revista: ao concluir um programa de 30 perguntas o aplicativo gera a senha AL + número do programa + pontuação + verificador. Resgatá-la uma vez soma essa pontuação à Nota Desafio. A mesma senha não conta de novo. Se uma senha posterior do mesmo programa tiver pontuação maior, ela substitui a contribuição anterior. A pontuação do programa e a Nota Desafio ficam separadas.';
+  'Regra nova, não descrita na revista: ao concluir um programa de 30 perguntas avaliadas, sem pendências, o aplicativo gera a senha AL + número do programa + pontuação + verificador. Resgatá-la uma vez soma essa pontuação à Nota Desafio. A mesma senha não conta de novo. Se uma senha posterior do mesmo programa tiver pontuação maior, ela substitui a contribuição anterior. A pontuação do programa e a Nota Desafio ficam separadas.';

@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
+import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GoldButton, NightScreen } from '@/components/game/ui';
 import { IntroBackground, LOGO_BOTTOM, useScreenViewport, videoFrame, type Viewport } from '@/components/intro-background';
 import { findProgram } from '@/game/rules';
+import { downloadBook } from '@/services/downloadBook';
 import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
 
@@ -24,6 +26,24 @@ export default function HomeScreen() {
   const { ready, persistent, session } = useGame();
   const current = session?.status === 'in_progress' ? findProgram(session.programId) : undefined;
   const { viewport, onLayout } = useScreenViewport();
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const downloadLock = useRef(false);
+
+  async function handleDownload() {
+    if (downloadLock.current) return;
+    downloadLock.current = true;
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      await downloadBook();
+    } catch (error) {
+      setDownloadError(error instanceof Error ? error.message : 'Não foi possível baixar o livro. Tente novamente.');
+    } finally {
+      downloadLock.current = false;
+      setDownloading(false);
+    }
+  }
 
   return (
     <NightScreen backdrop={<IntroBackground viewport={viewport} />} overlay={viewport ? <HomeLead viewport={viewport} /> : null} onLayout={onLayout}>
@@ -37,6 +57,16 @@ export default function HomeScreen() {
           ) : null}
           <GoldButton label="Escolher programa" onPress={() => router.push('/programs')} variant={current ? 'secondary' : 'primary'} />
           <GoldButton label="Resultados e Nota Desafio" onPress={() => router.push('/history')} variant="secondary" />
+          <GoldButton
+            label={downloading ? 'Preparando livro…' : 'Baixar livro em PDF'}
+            onPress={() => void handleDownload()}
+            disabled={downloading}
+            variant="secondary"
+          />
+          <Text style={styles.note}>
+            Consulte as páginas e ilustrações do livro de Aladdin para responder às perguntas. No celular, escolha onde salvar ou compartilhar o PDF.
+          </Text>
+          {downloadError ? <Text accessibilityRole="alert" style={styles.note}>{downloadError}</Text> : null}
         </View>
 
         {ready && !persistent ? (

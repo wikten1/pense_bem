@@ -1,0 +1,269 @@
+{
+  "source": "assets/pdfs/pense_bem_-_disney_-_aladdin_em_os_misterios_do_oriente.pdf",
+  "sourceSha256": "cffe181ee0e2c10bac1dd89112944ac3d083d4406444660e1abccad80121794b",
+  "review": "Visual comparison against each original crop; quiz-relevant subjects, labels, letter order and puzzle pieces checked. Redraws are interpretive restorations, not pixel-identical facsimiles.",
+  "protectedFiles": {
+    "src/content/aladdin.ts": "5f19efddc26f73ae8cb20a4b08be443c39c09f7bc8e60aed10b0ab430440acbc",
+    "src/content/aladdin-visuals.ts": "8388000c4d8efcd8462ff2ebcfb65b52e0912e99727d1652867aef4f4a75dee6",
+    "src/game/rules.ts": "f049684154f0d12a547a4d78d9bbb1a7cdf28b63c148f2853f2393a6e99d9ac6",
+    "src/game/rules.test.ts": "f06dfad2f2be8ae6cd33c00f968afc76006ce56b45db35c01975e2676dce594e",
+    "src/state/GameProvider.tsx": "9957033b49fd92020a78ebe66b570a43963387011d2e7ccfdd915abdcc6b4e91",
+    "src/app/quiz/[programId].tsx": "95c2dda1943d4975535bd7f6d5af9c7679c3bd33a5f18ab8c9c26de7464ce716",
+    "src/components/game/question-illustration.tsx": "bef253f1b608efe1d1a5dd40d0e682901d296329c0f34dd3165273eb399bbc00",
+    "src/theme/tokens.ts": "0ef3f25839044b4bcaba629e4fd876fb25daaf83f6955692dbcef2e55dfeef87"
+  },
+  "images": [
+    {
+      "id": "palace",
+      "reviewed": true,
+      "width": 1728,
+      "height": 1152,
+      "sha256": "e85caf06cd7e8231cfcb5cb042d75efa0be932cb0f2c13cf6b0f7152db72a55e",
+      "method": "user-supplied replacement, resized proportionally without visual edits",
+      "background": "#08070c",
+      "replacement": {
+        "source": "artwork/aladdin-restored/palace-user-supplied.jpg",
+        "sourceSha256": "59dd4ec3246a822c259bdbe5a2a0f412c3998acdfe766735765f4da193df90d7",
+        "previousMaster": "artwork/aladdin-restored/palace-lighting-v2.png",
+        "previousSha256": "0d27dec5657627c38408535d959762d84a91505f7e80cb307ca3eb2e8ca2000d",
+        "review": "Exact image selected by the user, including the seated girl. No lighting, color or content edits; contain export preserves the complete composition."
+      },
+      "previousLightingRevision": {
+        "source": "artwork/aladdin-restored/palace-dark-v1.png",
+        "sourceSha256": "d95674042213adbaaf2cd4a1c3d30771e557f079c1b618b3708f78ffe06c6697",
+        "script": "scripts/brighten-aladdin-palace.mjs",
+        "luminanceAnchors": [
+          [
+            0,
+            0
+          ],
+          [
+            8,
+            30
+          ],
+          [
+            16,
+            58
+          ],
+          [
+            32,
+            90
+          ],
+          [
+            64,
+            124
+          ],
+          [
+            96,
+            151
+          ],
+          [
+            128,
+            172
+          ],
+          [
+            192,
+            217
+          ],
+          [
+            255,
+            255
+          ]
+        ],
+        "highlightProtection": "Smooth fade for maximum RGB channel between 110 and 235; preserve the luminous sunset.",
+        "review": "Existing foreground contours made visible; no new faces, objects or drawn details. Same dimensions and geometry."
+      }
+    },
+    {
+      "id": "tiger-cubs",
+      "reviewed": true,
+      "width": 2169,
+      "height": 725,
+      "sha256": "3c7095022e04ec8243fe631da35b441637aade0a78042a822505e2b48c35fd04",
+      "paddingCrop": {
+        "left": 0,
+        "top": 93,
+        "width": 2169,
+        "height": 538
+      },
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "tiger-calm",
+      "reviewed": true,
+      "width": 1319,
+      "height": 1193,
+      "sha256": "e1f286c52b606558f7bebdc0a04ad703f2f2ea190fae9403fae4b224f301e182",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "tiger-attack",
+      "reviewed": true,
+      "width": 1308,
+      "height": 1203,
+      "sha256": "56d7a0e61f7eea9a0ac630db491f74d9192b1b004506190ea0f3955ccad3686b",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "characters",
+      "reviewed": true,
+      "width": 1302,
+      "height": 1326,
+      "sha256": "db7ff98dbb10a063031c02c5e80ab62ba8e4384e633067f3e72a32828268f596",
+      "method": "source-based non-generative descreening",
+      "limitation": "Image-generation output was blocked by the tool; restored from source pixels without synthesizing content."
+    },
+    {
+      "id": "instruments",
+      "reviewed": true,
+      "width": 1780,
+      "height": 883,
+      "sha256": "887361c89569ff739c1a4269952f1b4ffbe107fb897c271ec2166c8ac0d2b1f5",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "desert",
+      "reviewed": true,
+      "width": 1397,
+      "height": 1126,
+      "sha256": "23366cf29adaf91b2583bda5ba040b956ba4f44ce5611860f88e7be098c79afb",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "bay",
+      "reviewed": true,
+      "width": 1595,
+      "height": 986,
+      "sha256": "15c7b2962a43ff1ef6c2af86f777a3592115a0056720c59de7bb6bdbf9ca0bae",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "island",
+      "reviewed": true,
+      "width": 1399,
+      "height": 1124,
+      "sha256": "466ca168e25b27b78e1c500e150b0a3798fec6c8214d0a53d3da56ecf500997a",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "reef",
+      "reviewed": true,
+      "width": 1639,
+      "height": 959,
+      "sha256": "4e5a76ebc21e6c5f05607ffe8d795cca1368b76514748a76029cf7baed50a807",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "cape",
+      "reviewed": true,
+      "width": 1500,
+      "height": 1049,
+      "sha256": "14ff9e857b8ffec9a323a7e5c34eead5fe9ca7d8ad508903059326703d2c4206",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "mermaid",
+      "reviewed": true,
+      "width": 1270,
+      "height": 1239,
+      "sha256": "d5fb0972b1780a13c01bcafeb58476e1b71044d30ca929d08eb2a98246141dbe",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "centaur",
+      "reviewed": true,
+      "width": 1173,
+      "height": 1341,
+      "sha256": "5de621f361de910a74f9afb6ef141e03f0c5dd3a48fc6958279ad569e0b2fa34",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "curupira",
+      "reviewed": true,
+      "width": 1012,
+      "height": 1554,
+      "sha256": "fbe9565987ec179563771e17b0f9fe1b0632a5575f8f2a53c4a1d476f6e5574c",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "dragon",
+      "reviewed": true,
+      "width": 1477,
+      "height": 1065,
+      "sha256": "8c5478c9d32db77080de1c6c98681339aeccfc755803fca78e35058fd442c53d",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "unicorn",
+      "reviewed": true,
+      "width": 1226,
+      "height": 1283,
+      "sha256": "cb9d50b848451c932c654693423f8267cc0410b4fac78d87a43e44b7c2e3380f",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "werewolf",
+      "reviewed": true,
+      "width": 1158,
+      "height": 1358,
+      "sha256": "0f805d4d85873cdd8b5f808d8a564d2b4a7b45ea54a78de6f09b235427fb33d3",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "puzzle",
+      "reviewed": true,
+      "width": 1264,
+      "height": 1244,
+      "sha256": "6718eaa73627919d5e0418d44eefec79c3c5d1574a5be4613408d664ebe65557",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "sherazade",
+      "reviewed": true,
+      "width": 2170,
+      "height": 725,
+      "sha256": "e918145bfd553d475879c5b44a914f7964e0139dcac381c73d11074398c0cea1",
+      "paddingCrop": {
+        "left": 0,
+        "top": 133,
+        "width": 2170,
+        "height": 457
+      },
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "ali-baba-sequence",
+      "reviewed": true,
+      "width": 1419,
+      "height": 1108,
+      "sha256": "04a53de892c6a1342127835f1c8e2fdef55da0b0fe1be076f1c28a2016fd0501",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "cinema",
+      "reviewed": true,
+      "width": 1572,
+      "height": 1212,
+      "sha256": "ee1fa30955fe3a6bb9ee41c2b39e7f1ca18214716e488557691001a385f9086b",
+      "method": "source-based non-generative descreening",
+      "limitation": "Image-generation output was blocked by the tool; restored from source pixels without synthesizing content."
+    },
+    {
+      "id": "genie-sequence",
+      "reviewed": true,
+      "width": 1472,
+      "height": 1020,
+      "sha256": "cc3cbfc46b94b41f22d6b56a36fadbf5702f213d902760cccd9ed0a9a331277a",
+      "method": "source-based non-generative descreening",
+      "limitation": "Image-generation output was blocked by the tool; restored from source pixels without synthesizing content."
+    },
+    {
+      "id": "orchestra",
+      "reviewed": true,
+      "width": 1714,
+      "height": 918,
+      "sha256": "b0adf3d1eca7914690ac73fef272a6a203b00c42d14a2f25d33f691552efd642",
+      "method": "reference-constrained digital redraw"
+    }
+  ]
+}

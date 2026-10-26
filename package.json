@@ -7,6 +7,7 @@
     "@expo/ui": "~58.0.21",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~58.0.16",
+    "expo-asset": "~58.0.18",
     "expo-constants": "~58.0.12",
     "expo-dev-client": "~58.0.14",
     "expo-device": "~58.0.5",
@@ -15,6 +16,7 @@
     "expo-image": "~58.0.16",
     "expo-linking": "~58.0.13",
     "expo-router": "~58.0.24",
+    "expo-sharing": "~58.0.20",
     "expo-splash-screen": "~58.0.10",
     "expo-status-bar": "~58.0.3",
     "expo-symbols": "~58.0.4",
@@ -35,6 +37,8 @@
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
+    "imagetracerjs": "^1.2.6",
+    "sharp": "^0.35.5",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -44,7 +48,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint src",
-    "test": "node --experimental-strip-types --test src/game/rules.test.ts"
+    "test": "node --experimental-strip-types --test src/game/rules.test.ts",
+    "images:aladdin": "node scripts/prepare-aladdin-artwork.mjs",
+    "images:aladdin:scan": "node scripts/enhance-aladdin-illustrations.mjs --output tmp/aladdin-scan-upscale"
   },
   "private": true
 }

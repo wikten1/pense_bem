@@ -83,23 +83,35 @@ const keyColors: Record<ChoiceId, string> = {
   blue: colors.keyBlue,
   green: colors.keyGreen,
 };
+const keyLetters: Record<ChoiceId, string> = { red: 'A', yellow: 'B', blue: 'C', green: 'D' };
+const squareColors: Record<ChoiceId, string> = {
+  red: '#FA2C24',
+  yellow: '#FDE121',
+  blue: '#0769DE',
+  green: '#05A03B',
+};
+const colorNames: Record<ChoiceId, string> = { red: 'vermelho', yellow: 'amarelo', blue: 'azul', green: 'verde' };
 
 export function AnswerChoice({
   choiceId,
   label,
   state,
   onPress,
+  colorOnly = false,
 }: {
   choiceId: ChoiceId;
   label: string;
   state: 'idle' | 'wrong' | 'correct' | 'locked';
   onPress: () => void;
+  colorOnly?: boolean;
 }) {
   const disabled = state !== 'idle';
+  const statusLabel = state === 'wrong' ? ', incorreta' : state === 'correct' ? ', correta' : '';
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ disabled }}
+      accessibilityLabel={`${colorOnly ? `Quadrado ${colorNames[choiceId]}` : keyLetters[choiceId]}. ${label}${statusLabel}`}
+      accessibilityState={{ disabled, selected: state === 'wrong' || state === 'correct' }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
@@ -109,8 +121,11 @@ export function AnswerChoice({
         state === 'locked' && styles.answerLocked,
         pressed && state === 'idle' && styles.pressed,
       ]}>
-      <View style={[styles.pip, { backgroundColor: keyColors[choiceId] }]} />
+      <View style={[styles.pip, colorOnly && styles.colorSquare, { backgroundColor: colorOnly ? squareColors[choiceId] : keyColors[choiceId] }]}>
+        {!colorOnly ? <Text style={styles.keyLetter}>{keyLetters[choiceId]}</Text> : null}
+      </View>
       <Text style={[styles.answerText, state === 'wrong' && styles.answerTextWrong]}>{label}</Text>
+      {state === 'wrong' || state === 'correct' ? <Text style={styles.answerStatus}>{state === 'correct' ? '✓' : '×'}</Text> : null}
     </Pressable>
   );
 }
@@ -228,9 +243,26 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   pip: {
-    width: 22,
-    height: 22,
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 6,
+  },
+  keyLetter: {
+    color: colors.backgroundDeep,
+    fontWeight: '800',
+    fontSize: 15,
+  },
+  colorSquare: {
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#000',
+    flexShrink: 0,
+  },
+  answerStatus: {
+    color: colors.text,
+    fontSize: 22,
   },
   answerText: {
     flex: 1,

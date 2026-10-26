@@ -38,7 +38,7 @@ export default function ProgramsScreen() {
 
   return (
     <NightScreen backdrop={<IntroBackground viewport={viewport} />} onLayout={onLayout}>
-      <BackLink label="Início" onPress={() => router.back()} />
+      <BackLink label="Início" onPress={() => router.replace('/')} />
       <Text style={styles.title}>Programas</Text>
       <ScrollView contentContainerStyle={styles.list} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <Panel>
@@ -67,7 +67,7 @@ export default function ProgramsScreen() {
           <Text style={styles.cardTitle}>Livro 04</Text>
           {ALADDIN_PROGRAMS.map((program, index) => {
             const best = bestScore(program.id);
-            const done = history.some((item) => item.programId === program.id);
+            const done = history.some((item) => item.programId === program.id && !item.pending);
             return (
               <View key={program.id} style={[styles.programRow, index === 0 && styles.programRowFirst]}>
                 <View style={styles.number}>

@@ -1,0 +1,216 @@
+{
+  "method": "reviewed digital restoration masters, exported as WebP quality 94",
+  "source": "assets/pdfs/pense_bem_-_disney_-_aladdin_em_os_misterios_do_oriente.pdf",
+  "sourceSha256": "cffe181ee0e2c10bac1dd89112944ac3d083d4406444660e1abccad80121794b",
+  "count": 23,
+  "totalBytes": 2982854,
+  "images": [
+    {
+      "id": "palace",
+      "width": 1204,
+      "height": 764,
+      "bytes": 103396,
+      "sha256": "4fdecc0683b7c2d02ff32ea30d8211374cdcc6cc56ca67e7be18a1da673e5047",
+      "master": "artwork/aladdin-restored/palace.png",
+      "method": "user-supplied replacement, resized proportionally without visual edits"
+    },
+    {
+      "id": "tiger-cubs",
+      "width": 1330,
+      "height": 330,
+      "bytes": 85860,
+      "sha256": "613bac52013285e78f20601cee2f2b2464237f9c7b96057efef2d9fbe405f256",
+      "master": "artwork/aladdin-restored/tiger-cubs.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "tiger-calm",
+      "width": 920,
+      "height": 832,
+      "bytes": 79072,
+      "sha256": "63c23187f06d7207bf188fa9c58591952343782964b2a20a2800d487c1340d31",
+      "master": "artwork/aladdin-restored/tiger-calm.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "tiger-attack",
+      "width": 1000,
+      "height": 920,
+      "bytes": 98094,
+      "sha256": "223b14c262eececccd5e16aaba1775a7b0e6f5f6c40ed076b327e9560eebe68c",
+      "master": "artwork/aladdin-restored/tiger-attack.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "characters",
+      "width": 1302,
+      "height": 1326,
+      "bytes": 207376,
+      "sha256": "ba827895d24e65829e0570149d5e36ad1c8a0d355647e182c7b62a772a6e6378",
+      "master": "artwork/aladdin-restored/characters.png",
+      "method": "source-based non-generative descreening"
+    },
+    {
+      "id": "instruments",
+      "width": 1518,
+      "height": 754,
+      "bytes": 268334,
+      "sha256": "42f4ae1fc84b993b659999afce106b90e0491b85312a73b2e31107257c26bc74",
+      "master": "artwork/aladdin-restored/instruments.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "desert",
+      "width": 1578,
+      "height": 1270,
+      "bytes": 271852,
+      "sha256": "6205448f60edfa3f0d782c15e86824fd4d7ee021bfa7a57fd71c72105530975d",
+      "master": "artwork/aladdin-restored/desert.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "bay",
+      "width": 796,
+      "height": 492,
+      "bytes": 37548,
+      "sha256": "4bd9dc51aa6a5149f649c7c3aa01bb7c25015931cd46bb74fd21eb5f1627f420",
+      "master": "artwork/aladdin-restored/bay.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "island",
+      "width": 712,
+      "height": 572,
+      "bytes": 48126,
+      "sha256": "aeecc6d2cc7bc8e978819101c31d8cd3ba7ca394d91c27f82182d66b93c1574a",
+      "master": "artwork/aladdin-restored/island.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "reef",
+      "width": 868,
+      "height": 508,
+      "bytes": 40116,
+      "sha256": "f3cb523c7cd83296dc066d05c8fd440577c1e3950c92d69bd23843ef5450a2e5",
+      "master": "artwork/aladdin-restored/reef.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "cape",
+      "width": 864,
+      "height": 604,
+      "bytes": 36990,
+      "sha256": "0c9acfe2152b0afc88bf55ac670b3390879ca4e16e6e7da7d905b21176f6f587",
+      "master": "artwork/aladdin-restored/cape.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "mermaid",
+      "width": 648,
+      "height": 632,
+      "bytes": 51720,
+      "sha256": "f0ea8efd030bb4d0e4300a9fffb46003cd3c3e4b342c30ee774b31690e4e488c",
+      "master": "artwork/aladdin-restored/mermaid.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "centaur",
+      "width": 728,
+      "height": 832,
+      "bytes": 57674,
+      "sha256": "43723c993a65c2a70c77b8384d3557b2ac2c0854527c5125ae5511026269cc84",
+      "master": "artwork/aladdin-restored/centaur.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "curupira",
+      "width": 612,
+      "height": 940,
+      "bytes": 57504,
+      "sha256": "78d84957785be5f47cb50602225ab34067a23d19a47134d3356b9c8e4c4f5e13",
+      "master": "artwork/aladdin-restored/curupira.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "dragon",
+      "width": 1304,
+      "height": 940,
+      "bytes": 116400,
+      "sha256": "d76e136a9c75d573d9ee8995477dc78b3e915e7cd47fc578b0438e788479917c",
+      "master": "artwork/aladdin-restored/dragon.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "unicorn",
+      "width": 772,
+      "height": 808,
+      "bytes": 58472,
+      "sha256": "ddea613bd9611d022fb1e76823b378349bb4d2394bc66746be7910b33938b1d9",
+      "master": "artwork/aladdin-restored/unicorn.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "werewolf",
+      "width": 644,
+      "height": 756,
+      "bytes": 64474,
+      "sha256": "e0f30b885ce1b5c1409aa543696977f24c6f5af419dc643e5a1c830f29bdccf3",
+      "master": "artwork/aladdin-restored/werewolf.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "puzzle",
+      "width": 1436,
+      "height": 1412,
+      "bytes": 215322,
+      "sha256": "8b72a3c362d12726d27bcdbab63499b551bfab107fb222f2c7cf0be3f89dc703",
+      "master": "artwork/aladdin-restored/puzzle.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "sherazade",
+      "width": 1270,
+      "height": 254,
+      "bytes": 52560,
+      "sha256": "bc4bd7108e183f1fca8e72295e61e9b33b326afb1ff61d1d9fd31d455835210a",
+      "master": "artwork/aladdin-restored/sherazade.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "ali-baba-sequence",
+      "width": 1478,
+      "height": 1156,
+      "bytes": 364218,
+      "sha256": "20e54d4a7e63a44671a958441a005cb00832b61423ef790a3d68dca4d3365fed",
+      "master": "artwork/aladdin-restored/ali-baba-sequence.png",
+      "method": "reference-constrained digital redraw"
+    },
+    {
+      "id": "cinema",
+      "width": 1572,
+      "height": 1212,
+      "bytes": 216538,
+      "sha256": "db851c506171a329adcf0edc84a0e1dd7ef797394b693b66173fc58324a301d1",
+      "master": "artwork/aladdin-restored/cinema.png",
+      "method": "source-based non-generative descreening"
+    },
+    {
+      "id": "genie-sequence",
+      "width": 1472,
+      "height": 1020,
+      "bytes": 173214,
+      "sha256": "127269bb2106c360cbaefe9ae5a11cd2cf3f20aafe7a2e15a6f7ca0d16ca9d5b",
+      "master": "artwork/aladdin-restored/genie-sequence.png",
+      "method": "source-based non-generative descreening"
+    },
+    {
+      "id": "orchestra",
+      "width": 1524,
+      "height": 816,
+      "bytes": 277994,
+      "sha256": "2772704b0757f227fbebafcdb3e1e3f2062850782c77aee37ef3b4ad602bed78",
+      "master": "artwork/aladdin-restored/orchestra.png",
+      "method": "reference-constrained digital redraw"
+    }
+  ]
+}

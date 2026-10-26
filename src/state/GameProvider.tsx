@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import {
+  acknowledgeReview,
   applyAnswer,
   buildQuiz,
   createSession,
@@ -11,6 +12,7 @@ import {
   passwordFor,
   programIdByNumber,
   redeemPassword,
+  restoreSession,
   sessionStats,
   type AnswerEvent,
   type ChoiceId,
@@ -30,6 +32,7 @@ export type HistoryEntry = {
   maxScore: number;
   correct: number;
   missed: number;
+  pending?: number;
   percent: number;
   finishedAt: string;
   password: string | null;
@@ -44,14 +47,16 @@ type SaveData = {
 type GameContextValue = {
   ready: boolean;
   persistent: boolean;
+  saveError: string | null;
   session: Session | null;
   history: HistoryEntry[];
   ledger: Ledger;
   notaDesafio: number;
   bestScore: (programId: string) => number | null;
   startProgram: (programId: string) => boolean;
-  answer: (choiceId: ChoiceId) => AnswerEvent | null;
-  next: () => Session | null;
+  answer: (choiceId: ChoiceId, questionId: string, sessionId: string) => AnswerEvent | null;
+  review: (questionId: string, sessionId: string) => void;
+  next: (questionId: string, sessionId: string) => Session | null;
   redeem: (code: string) => ReturnType<typeof redeemPassword>;
 };
 
@@ -61,28 +66,16 @@ function emptySave(): SaveData {
   return { session: null, history: [], ledger: emptyLedger() };
 }
 
-function isSession(value: unknown): value is Session {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-  const session = value as Session;
-  return typeof session.id === 'string' && Array.isArray(session.quiz) && typeof session.index === 'number' && !!session.questions;
-}
-
 function readSave(raw: string | null): SaveData {
   if (!raw) {
     return emptySave();
   }
-  try {
-    const parsed = JSON.parse(raw) as Partial<SaveData>;
-    return {
-      session: isSession(parsed.session) ? parsed.session : null,
-      history: Array.isArray(parsed.history) ? parsed.history : [],
-      ledger: parsed.ledger?.codes && parsed.ledger.byProgram ? parsed.ledger : emptyLedger(),
-    };
-  } catch {
-    return emptySave();
-  }
+  const parsed = JSON.parse(raw) as Partial<SaveData>;
+  return {
+    session: parsed.session ? restoreSession(parsed.session) : null,
+    history: Array.isArray(parsed.history) ? parsed.history : [],
+    ledger: parsed.ledger?.codes && parsed.ledger.byProgram ? parsed.ledger : emptyLedger(),
+  };
 }
 
 function toHistory(session: Session): HistoryEntry | null {
@@ -100,6 +93,7 @@ function toHistory(session: Session): HistoryEntry | null {
     maxScore: stats.maxScore,
     correct: stats.correct,
     missed: stats.missed,
+    pending: stats.pending,
     percent: stats.percent,
     finishedAt: session.finishedAt,
     password: passwordFor(session),
@@ -112,6 +106,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const storeRef = useRef<Awaited<ReturnType<typeof openStore>>['store'] | null>(null);
   const [ready, setReady] = useState(false);
   const [persistent, setPersistent] = useState(true);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const writesRef = useRef(Promise.resolve());
 
   useEffect(() => {
     dataRef.current = data;
@@ -134,12 +130,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
           return;
         }
         setPersistent(canPersist);
-        setData(readSave(raw));
+        const restored = readSave(raw);
+        dataRef.current = restored;
+        setData(restored);
         setReady(true);
       })
       .catch(() => {
         if (active) {
+          storeRef.current = null;
           setPersistent(false);
+          setSaveError('Não foi possível recuperar o progresso. O registro anterior foi preservado; feche e abra o aplicativo para tentar novamente.');
           setReady(true);
         }
       });
@@ -152,10 +152,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!ready || !storeRef.current) {
       return;
     }
-    storeRef.current.setItem(STORAGE_KEY, JSON.stringify(data)).catch(() => undefined);
+    const store = storeRef.current;
+    const snapshot = JSON.stringify(data);
+    writesRef.current = writesRef.current
+      .then(() => store.setItem(STORAGE_KEY, snapshot))
+      .then(() => setSaveError(null))
+      .catch(() => setSaveError('Não foi possível salvar a última ação. Mantenha o aplicativo aberto; a próxima ação tentará salvar novamente.'));
   }, [data, ready]);
 
   const startProgram = useCallback((programId: string) => {
+    if (!ready) return false;
     const seed = Date.now();
     const quiz = buildQuiz(programId, seed);
     if (!quiz) {
@@ -164,28 +170,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const session = createSession(programId, quiz, new Date(seed).toISOString(), seed);
     update((current) => ({ ...current, session }));
     return true;
-  }, [update]);
+  }, [ready, update]);
 
-  const answer = useCallback((choiceId: ChoiceId) => {
+  const answer = useCallback((choiceId: ChoiceId, questionId: string, sessionId: string) => {
     let event: AnswerEvent | null = null;
     update((current) => {
-      if (!current.session || current.session.status === 'finished') {
+      if (!current.session || current.session.id !== sessionId || current.session.status === 'finished') {
         return current;
       }
-      const result = applyAnswer(current.session, choiceId);
+      const result = applyAnswer(current.session, choiceId, questionId);
       event = result.event;
       return { ...current, session: result.session };
     });
     return event;
   }, [update]);
 
-  const next = useCallback(() => {
+  const review = useCallback((questionId: string, sessionId: string) => {
+    update((current) => {
+      if (!current.session || current.session.id !== sessionId) return current;
+      return { ...current, session: acknowledgeReview(current.session, questionId) };
+    });
+  }, [update]);
+
+  const next = useCallback((questionId: string, sessionId: string) => {
     let finished: Session | null = null;
     update((current) => {
-      if (!current.session) {
+      if (!current.session || current.session.id !== sessionId || current.session.quiz[current.session.index]?.id !== questionId) {
         return current;
       }
-      const session = goToNext(current.session, new Date().toISOString());
+      const session = goToNext(current.session, new Date().toISOString(), questionId);
       if (session.status !== 'finished') {
         return { ...current, session };
       }
@@ -211,7 +224,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const bestScore = useCallback(
     (programId: string) => {
-      const scores = data.history.filter((item) => item.programId === programId).map((item) => item.score);
+      const scores = data.history.filter((item) => item.programId === programId && !item.pending).map((item) => item.score);
       if (scores.length === 0) {
         return null;
       }
@@ -224,6 +237,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     () => ({
       ready,
       persistent,
+      saveError,
       session: data.session,
       history: data.history,
       ledger: data.ledger,
@@ -231,10 +245,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
       bestScore,
       startProgram,
       answer,
+      review,
       next,
       redeem,
     }),
-    [ready, persistent, data, bestScore, startProgram, answer, next, redeem],
+    [ready, persistent, saveError, data, bestScore, startProgram, answer, review, next, redeem],
   );
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
