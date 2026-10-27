@@ -121,15 +121,15 @@ const rows = `
 109|25|Só então Ali Babá desceu da ......, chegou perto da pedra e gritou: Abre-te, Sésamo!|bicicleta;escada;gruta;árvore|D|A página 24 informa que Ali Babá subiu numa árvore.
 110|25|Quando a gruta se abriu, Ali Babá entrou e viu um grande ......!|tesouro;monstro;feiticeiro;sultão|A|A continuação diz que encheu o saco de moedas de ouro.
 111|25|Mais que depressa encheu de moedas de ouro o saco que tinha trazido para a lenha e voltou correndo para sua ...... .|árvore;casa;cidade;mulher|B|A continuação na página 26 descreve a mulher em casa vendo a riqueza.
-112|26|Em cada linha, aponte o objeto que serve para... Pesar alimentos:|panela;xícara;liquidificador;balança|D|A introdução informa que a balança serve para pesar.
-113|26|Pesar pessoas:|balança;bomba de combustível;televisão;rádio|A|A balança é o único instrumento de pesagem entre as opções.
-114|26|Medir o comprimento:|compasso;régua;apontador;alicate|B|A régua é o instrumento graduado de comprimento entre as opções.
-115|26|Medir líquidos:|chupeta;fita métrica;jarra graduada;folha|C|A jarra desenhada traz marcas de 1 e 2 litros.
-116|26|Medir temperatura:|lanterna;estetoscópio;termômetro;lâmpada|C|Termômetro é o instrumento de temperatura entre as opções.
-117|27|Cortar lenha:|garfo;martelo;tesoura;machado|D|Machado é a ferramenta de corte de lenha entre as opções.
-118|27|Carregar dinheiro:|chapéu;bolsa com telefone;sapato;carteira|D|A carteira desenhada contém cédulas.
-119|27|Guardar dinheiro:|igreja;hospital;banco;zoológico|C|O banco é a instituição de guarda de dinheiro entre as opções.
-120|27|Saber as horas:|óculos;colar;relógio;isqueiro|C|O relógio é o instrumento de horas entre as opções.
+112|26|Em cada linha, aponte o objeto que serve para... Pesar alimentos:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|D|A balança, identificada pelo quadrado verde na quarta opção, serve para pesar alimentos.
+113|26|Pesar pessoas:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|A|A balança, identificada pelo quadrado vermelho na primeira opção, serve para pesar pessoas.
+114|26|Medir o comprimento:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|B|A régua, identificada pelo quadrado amarelo na segunda opção, é o instrumento graduado para medir o comprimento.
+115|26|Medir líquidos:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|C|A jarra graduada, identificada pelo quadrado azul na terceira opção, serve para medir líquidos.
+116|26|Medir temperatura:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|C|O termômetro, identificado pelo quadrado azul na terceira opção, serve para medir temperatura.
+117|27|Cortar lenha:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|D|O machado, identificado pelo quadrado verde na quarta opção, serve para cortar lenha.
+118|27|Carregar dinheiro:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|D|A carteira, identificada pelo quadrado verde na quarta opção, contém cédulas e serve para carregar dinheiro.
+119|27|Guardar dinheiro:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|C|O banco, identificado pelo quadrado azul na terceira opção, é a instituição de guarda de dinheiro entre as opções.
+120|27|Saber as horas:|Primeira opção;Segunda opção;Terceira opção;Quarta opção|C|O relógio, identificado pelo quadrado azul na terceira opção, serve para saber as horas.
 121|29|Aponte o nome correto da figura 121.|fita;roda;tira;filme|D|O número 121 aponta a película enrolada no carretel, que contém as imagens do filme.
 122|29|Aponte o nome correto da figura 122.|quadro;lençol;parede;tela|D|O número 122 identifica a tela onde a imagem é projetada.
 123|29|Aponte o nome correto da figura 123.|espectadores;passageiros;amigos;animais|A|O número 123 identifica as pessoas sentadas assistindo ao filme: os espectadores.
@@ -163,15 +163,12 @@ const rows = `
 `;
 
 
-function range(a:number,b:number) { return Array.from({length:b-a+1},(_,i)=>a+i); }
-const illustratedOptions = new Set([...range(112,120)]);
 export const questions: Question[] = rows.trim().split('\n').map(row => {
   const [n,p,prompt,choices,answer,basis] = row.split('|');
   const number = Number(n);
   const notes: string[] = [];
 
-  if ([15,16,45,46,47,48,49,50,51,61,80,81,82,83,84,85,86].includes(number)) notes.push('Alternativas associadas à imagem pelas cores vermelho, amarelo, azul e verde, nessa ordem.');
-  if (illustratedOptions.has(number)) notes.push('Adaptação digital: alternativas ilustradas transcritas como descrições textuais, na ordem das cores.');
+  if ([15,16,45,46,47,48,49,50,51,61,80,81,82,83,84,85,86,112,113,114,115,116,117,118,119,120].includes(number)) notes.push('Alternativas associadas à imagem pelas cores vermelho, amarelo, azul e verde, nessa ordem.');
   if ([21,22,23,24,25,26,27,28,34,35,36,37,38,39,40,41,42,43,44,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,121,122,123,124,125,126,144,145,146].includes(number)) notes.push('Enunciado compartilhado da página individualizado para indicar o número da figura.');
   if ([105,106,107,108,109,110,111].includes(number)) notes.push('Trecho com pictogramas convertido em lacuna textual.');
   if (number>=91&&number<=98) notes.push('Adaptação digital: a palavra impressa sob a figura foi integrada ao enunciado.');
@@ -184,6 +181,7 @@ export const questions: Question[] = rows.trim().split('\n').map(row => {
     correctId:(answer || null) as ChoiceId|null, answerBasis:basis||null,context:contextFor(number),illustration:illustrationFor(number),reviewNotes:notes};
 });
 function contextFor(n:number): string|undefined {
+  if(n >= 147 && n <= 150) return 'Os filmes de sucesso são também lançados em vídeo. Assim, a gente pode assistir de novo, quantas vezes quiser, sem sair de casa!';
   if(n >= 99 && n <= 104) return 'Coloque os quadros na ordem dos acontecimentos: Ali Babá cortava lenha quando ouviu cavalos. Escondeu-se numa árvore. Os cavaleiros descarregaram os sacos, o chefe disse a fórmula mágica e os ladrões entraram na caverna. Escolha a letra do quadro que ocupa a posição pedida.';
   if(n >= 135 && n <= 140) return 'Ordene os desenhos desde a lâmpada sozinha até o Gênio completamente formado, abrindo os braços. Escolha a letra do quadro que ocupa a posição pedida.';
   if(n >= 74 && n <= 79) return 'Observe os contornos da figura e das peças A a F. Qual peça completa a lacuna indicada? As letras das peças são diferentes das letras dos botões de resposta.';
@@ -192,7 +190,6 @@ function contextFor(n:number): string|undefined {
   if(n >= 52 && n <= 57) return 'Durante muito tempo, a cidade de Bagdá foi o centro mais importante do império muçulmano. Lá viviam sultões e califas, em palácios maravilhosos rodeados de jardins e fontes. Havia centenas de mesquitas, onde os muçulmanos se reuniam para rezar. Os astrônomos estudavam as estrelas, os sábios escreviam livros, e o povo se reunia em volta dos contadores de histórias, que conheciam muitas fábulas e lendas.';
   if(n >= 58 && n <= 60) return 'Quadrado mágico (linhas de cima para baixo):\n4   9   2\n3   5   7\n8   1   6';
   if(n === 61 || n === 62) return 'Um dia o marinheiro Simbad embarcou num navio que levava mercadorias para as Índias. No meio da viagem, o vento parou de soprar. Simbad e seus companheiros resolveram ir até uma ilha próxima para descansar da viagem.';
-  if(n >= 105 && n <= 111) return 'Ali Babá estava no bosque quando ouviu um tropel de cavalos. Subiu numa árvore e ficou escondido. Chegaram quarenta cavaleiros, que descarregaram pesados sacos da garupa dos cavalos. O chefe gritou: Abre-te, Sésamo! A pedra se abriu e os ladrões entraram na caverna.\n\nAdaptação textual de apoio da página anterior; os pictogramas desta atividade foram convertidos em lacunas.';
   return undefined;
 }
 export const programNames = ['Aladdin e seus amigos','As Mil e Uma Noites','As aventuras de Simbad','Ali Babá e os quarenta ladrões','A magia do cinema','Revisão geral'];

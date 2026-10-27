@@ -104,7 +104,7 @@ export default function QuizScreen() {
                 key={choice.id}
                 choiceId={choice.id}
                 label={choice.text}
-                colorOnly={['aladdin-15', 'aladdin-16', 'aladdin-45', 'aladdin-46', 'aladdin-47', 'aladdin-48', 'aladdin-49', 'aladdin-50', 'aladdin-51', 'aladdin-61', 'aladdin-80', 'aladdin-81', 'aladdin-82', 'aladdin-83', 'aladdin-84', 'aladdin-85', 'aladdin-86'].includes(question.id)}
+                colorOnly={['aladdin-15', 'aladdin-16', 'aladdin-45', 'aladdin-46', 'aladdin-47', 'aladdin-48', 'aladdin-49', 'aladdin-50', 'aladdin-51', 'aladdin-61', 'aladdin-80', 'aladdin-81', 'aladdin-82', 'aladdin-83', 'aladdin-84', 'aladdin-85', 'aladdin-86', 'aladdin-112', 'aladdin-113', 'aladdin-114', 'aladdin-115', 'aladdin-116', 'aladdin-117', 'aladdin-118', 'aladdin-119', 'aladdin-120'].includes(question.id)}
                 state={visual}
                 onPress={() => choose(choice.id)}
               />
