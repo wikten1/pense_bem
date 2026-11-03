@@ -36,7 +36,12 @@
       ],
       "expo-video",
       "expo-asset",
-      "expo-sharing"
+      "expo-sharing",
+      ["expo-audio", {
+        "microphonePermission": false,
+        "recordAudioAndroid": false,
+        "enableBackgroundPlayback": false
+      }]
     ],
     "experiments": {
       "typedRoutes": true,

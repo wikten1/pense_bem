@@ -1,13 +1,16 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { GoldButton, NightScreen, Panel } from '@/components/game/ui';
+import { CompletionVideo } from '@/components/completion-video';
 import { PASSWORD_NOTE, buildQuiz, findProgram } from '@/game/rules';
 import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
 
 export default function ResultsScreen() {
-  const { programId: rawId } = useLocalSearchParams<{ programId: string }>();
+  const { programId: rawId, celebrate } = useLocalSearchParams<{ programId: string; celebrate?: string }>();
+  const [showCelebration, setShowCelebration] = useState(celebrate === '1');
   const programId = Array.isArray(rawId) ? rawId[0] : rawId;
   const { history, ledger, notaDesafio, redeem, startProgram, saveError } = useGame();
   const entry = history.find((item) => item.programId === programId);
@@ -65,6 +68,9 @@ export default function ResultsScreen() {
         {canReplay ? <GoldButton label="Jogar novamente" onPress={playAgain} variant="secondary" /> : null}
         <GoldButton label="Voltar aos programas" onPress={() => router.replace('/programs')} variant="secondary" />
       </ScrollView>
+      {showCelebration && (programId === 'p1' || programId === 'p2' || programId === 'p3' || programId === 'p4' || programId === 'p5' || programId === 'p6') ? (
+        <CompletionVideo programId={programId} onFinish={() => setShowCelebration(false)} />
+      ) : null}
     </NightScreen>
   );
 }
