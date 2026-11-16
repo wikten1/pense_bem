@@ -1,9 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Image } from 'expo-image';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AnswerChoice, BackLink, GoldButton, NightScreen, Panel } from '@/components/game/ui';
 import { QuestionIllustration } from '@/components/game/question-illustration';
+import { ProgramScreen } from '@/components/game/program-screen';
 import { findProgram, MAX_ATTEMPTS, sessionStats, type ChoiceId } from '@/game/rules';
 import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
@@ -57,27 +57,9 @@ export default function QuizScreen() {
           ? `× Resposta incorreta. ${attemptsLeft === 1 ? 'Resta 1 tentativa' : `Restam ${attemptsLeft} tentativas`}.`
           : unavailable ? null : 'Escolha uma alternativa. Você tem três tentativas.';
   const correctAnswer = question.choices.find((choice) => choice.id === question.correctChoiceId);
-  const backgroundSource = programId === 'p1'
-    ? require('../../../assets/images/aladdin-quiz-background.jpg')
-    : programId === 'p2'
-      ? require('../../../assets/images/abu-quiz-background.jpg')
-      : programId === 'p3'
-        ? require('../../../assets/images/sultao.jpg')
-        : programId === 'p4'
-          ? require('../../../assets/images/jasmine-quiz-background.png')
-          : programId === 'p5'
-            ? require('../../../assets/images/iago-quiz-background.png')
-            : programId === 'p6'
-              ? require('../../../assets/images/genie-quiz-background.png')
-              : undefined;
 
   return (
-    <NightScreen backdrop={backgroundSource ? (
-      <>
-        <Image source={backgroundSource} style={StyleSheet.absoluteFill} contentFit="cover" />
-        <View style={styles.backgroundScrim} />
-      </>
-    ) : undefined}>
+    <ProgramScreen programId={programId}>
       <View style={styles.top}>
         <BackLink label="Pausar" onPress={() => router.replace('/')} />
         <Text style={styles.program}>{program.title}</Text>
@@ -151,19 +133,11 @@ export default function QuizScreen() {
           <GoldButton label={last ? 'Ver resultado' : 'Próxima pergunta'} onPress={advance} />
         ) : null}
       </ScrollView>
-    </NightScreen>
+    </ProgramScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  backgroundScrim: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: 'rgba(8, 18, 49, 0.68)',
-  },
   top: {
     gap: space.xs,
   },

@@ -50,6 +50,7 @@
     "web": "expo start --web",
     "lint": "eslint src",
     "test": "node --experimental-strip-types --test src/game/rules.test.ts",
+    "test:audio": "node --experimental-strip-types --test tests/button-sounds.test.mjs",
     "images:aladdin": "node scripts/prepare-aladdin-artwork.mjs",
     "images:aladdin:scan": "node scripts/enhance-aladdin-illustrations.mjs --output tmp/aladdin-scan-upscale"
   },

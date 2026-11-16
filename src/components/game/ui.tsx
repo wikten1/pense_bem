@@ -1,9 +1,10 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { ChoiceId } from '@/game/rules';
+import { SoundPressable } from '@/components/sound-pressable';
 import { colors, fonts, space } from '@/theme/tokens';
 
 export function NightScreen({
@@ -58,7 +59,7 @@ export function GoldButton({
   variant?: 'primary' | 'secondary';
 }) {
   return (
-    <Pressable
+    <SoundPressable
       accessibilityRole="button"
       accessibilityState={{ disabled: Boolean(disabled) }}
       disabled={disabled}
@@ -73,7 +74,7 @@ export function GoldButton({
           <Text style={styles.buttonText}>{label}</Text>
         </View>
       )}
-    </Pressable>
+    </SoundPressable>
   );
 }
 
@@ -108,7 +109,8 @@ export function AnswerChoice({
   const disabled = state !== 'idle';
   const statusLabel = state === 'wrong' ? ', incorreta' : state === 'correct' ? ', correta' : '';
   return (
-    <Pressable
+    <SoundPressable
+      sound={choiceId}
       accessibilityRole="button"
       accessibilityLabel={`${colorOnly ? `Quadrado ${colorNames[choiceId]}` : keyLetters[choiceId]}. ${label}${statusLabel}`}
       accessibilityState={{ disabled, selected: state === 'wrong' || state === 'correct' }}
@@ -126,15 +128,15 @@ export function AnswerChoice({
       </View>
       <Text style={[styles.answerText, state === 'wrong' && styles.answerTextWrong]}>{label}</Text>
       {state === 'wrong' || state === 'correct' ? <Text style={styles.answerStatus}>{state === 'correct' ? '✓' : '×'}</Text> : null}
-    </Pressable>
+    </SoundPressable>
   );
 }
 
 export function BackLink({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" hitSlop={12} onPress={onPress} style={styles.back}>
+    <SoundPressable sound="back" accessibilityRole="button" hitSlop={12} onPress={onPress} style={styles.back}>
       <Text style={styles.backText}>{label}</Text>
-    </Pressable>
+    </SoundPressable>
   );
 }
 

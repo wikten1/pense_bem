@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppMusic } from '@/components/app-music';
 import { StartupVideo } from '@/components/startup-video';
 import { GameProvider } from '@/state/GameProvider';
+import { AudioProvider } from '@/state/AudioProvider';
 import { colors } from '@/theme/tokens';
 
 SplashScreen.preventAutoHideAsync();
@@ -38,20 +39,22 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
-      {appReady ? (
-        <GameProvider>
-          <StatusBar style="light" hidden={showIntro} />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.background },
-              animation: 'fade',
-            }}
-          />
-        </GameProvider>
-      ) : null}
-      {showIntro ? <StartupVideo onReady={hideSplash} onFinish={finishIntro} /> : null}
-      <AppMusic introVisible={showIntro} />
+      <AudioProvider>
+        {appReady ? (
+          <GameProvider>
+            <StatusBar style="light" hidden={showIntro} />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: colors.background },
+                animation: 'fade',
+              }}
+            />
+          </GameProvider>
+        ) : null}
+        {showIntro ? <StartupVideo onReady={hideSplash} onFinish={finishIntro} /> : null}
+        <AppMusic introVisible={showIntro} />
+      </AudioProvider>
     </GestureHandlerRootView>
   );
 }

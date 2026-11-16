@@ -1,9 +1,10 @@
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Illustration, IllustrationId } from '@/content/aladdin-visuals';
+import { SoundPressable } from '@/components/sound-pressable';
 import { colors, space } from '@/theme/tokens';
 
 const images: Record<IllustrationId, number> = {
@@ -78,19 +79,19 @@ export function QuestionIllustration({ illustration }: { illustration: Illustrat
 
   return (
     <View style={styles.container}>
-      <Pressable
+      <SoundPressable
         accessibilityRole="button"
         accessibilityLabel={`Ampliar ilustração. ${illustration.description}`}
         accessibilityHint="Abre a imagem maior para examinar os detalhes."
         onPress={() => setExpanded(true)}>
         <Image source={source} style={[styles.image, { aspectRatio }]} contentFit="contain" />
         <Text style={styles.caption}>Toque para ampliar a ilustração</Text>
-      </Pressable>
+      </SoundPressable>
       <Modal visible={expanded} animationType="fade" onRequestClose={() => setExpanded(false)}>
         <View style={[styles.modal, { paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space.md }]} accessibilityViewIsModal>
-          <Pressable accessibilityRole="button" onPress={() => setExpanded(false)} style={styles.close}>
+          <SoundPressable sound="back" accessibilityRole="button" onPress={() => setExpanded(false)} style={styles.close}>
             <Text style={styles.closeText}>Fechar ilustração</Text>
-          </Pressable>
+          </SoundPressable>
           <Text style={styles.instructions}>Arraste para ver os detalhes da imagem.</Text>
           <ScrollView style={styles.viewer}>
             <ScrollView horizontal>

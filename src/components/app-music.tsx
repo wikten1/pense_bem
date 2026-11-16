@@ -1,10 +1,10 @@
-import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus, type AudioPlayer } from 'expo-audio';
+import { useAudioPlayer, useAudioPlayerStatus, type AudioPlayer } from 'expo-audio';
 import { usePathname } from 'expo-router';
-import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
-import { AppState, Platform, Pressable, StyleSheet, Text } from 'react-native';
+import { useEffect, useRef, useSyncExternalStore, type RefObject } from 'react';
+import { Platform, Pressable, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { openStore } from '@/storage/store';
+import { useAppAudio } from '@/state/AudioProvider';
 import { colors, space } from '@/theme/tokens';
 
 const menuSource = require('../../assets/audios/musica_aladin.mp3');
@@ -14,16 +14,11 @@ const quiz03Source = require('../../assets/audios/livro03.mp3');
 const quiz04Source = require('../../assets/audios/livro04.mp3');
 const quiz05Source = require('../../assets/audios/livro05.mp3');
 const quiz06Source = require('../../assets/audios/musica 07.mp3');
-const STORAGE_KEY = 'pense-bem:music-muted';
 const subscribeToClient = () => () => {};
-
-function subscribeToAppState(onChange: () => void) {
-  const subscription = AppState.addEventListener('change', onChange);
-  return () => subscription.remove();
-}
 
 function configurePlayer(player: AudioPlayer, muted: boolean) {
   player.loop = true;
+  player.volume = 0.5;
   player.muted = muted;
 }
 
@@ -91,57 +86,7 @@ function MusicPlayer({ introVisible }: { introVisible: boolean }) {
             : pathname === '/quiz/p5' ? quiz05Source
               : pathname === '/quiz/p6' ? quiz06Source : null;
   const playerRef = useRef<AudioPlayer | null>(null);
-  const [muted, setMuted] = useState(false);
-  const [ready, setReady] = useState(false);
-  const appState = useSyncExternalStore(subscribeToAppState, () => AppState.currentState, () => null);
-  const storeRef = useRef<Awaited<ReturnType<typeof openStore>>['store'] | null>(null);
-  const writesRef = useRef(Promise.resolve());
-  const enabled = ready && appState === 'active';
-
-  useEffect(() => {
-    let active = true;
-
-    async function restorePreference() {
-      try {
-        const { store } = await openStore();
-        const saved = await store.getItem(STORAGE_KEY);
-        if (active) {
-          storeRef.current = store;
-          setMuted(saved === 'true');
-        }
-      } catch (error) {
-        console.warn('Não foi possível recuperar a preferência de música.', error);
-      }
-    }
-
-    const audioMode = setAudioModeAsync({
-      // On Android, false blocks media playback in both silent and vibrate modes.
-      // The app's music button controls muting independently of the ringer.
-      playsInSilentMode: true,
-      shouldPlayInBackground: false,
-      interruptionMode: 'mixWithOthers',
-    }).catch((error) => {
-      console.warn('Não foi possível configurar o áudio do app.', error);
-    });
-
-    Promise.all([restorePreference(), audioMode]).then(() => {
-      if (active) setReady(true);
-    });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!ready || !storeRef.current) return;
-    const store = storeRef.current;
-    writesRef.current = writesRef.current
-      .then(() => store.setItem(STORAGE_KEY, String(muted)))
-      .catch((error) => {
-        console.warn('Não foi possível salvar a preferência de música.', error);
-      });
-  }, [muted, ready]);
+  const { muted, setMuted, ready, enabled, playSound } = useAppAudio();
 
   return (
     <>
@@ -149,32 +94,31 @@ function MusicPlayer({ introVisible }: { introVisible: boolean }) {
       {source !== null ? (
         <MusicTrack key={source} source={source} muted={muted} enabled={enabled} playerRef={playerRef} />
       ) : null}
-      {source !== null ? (
-        <Pressable
-          accessibilityRole="switch"
-          accessibilityLabel="Músicas do app"
-          accessibilityHint={muted ? 'Ativar as músicas do app' : 'Silenciar as músicas do app'}
-          accessibilityState={{ checked: !muted, disabled: !ready }}
-          disabled={!ready}
-          onPress={() => {
-            // Start within the gesture so enabling music also works on the web.
-            const player = playerRef.current;
-            if (player) {
-              configurePlayer(player, !muted);
-              if (muted && enabled) player.play();
-              else player.pause();
-            }
-            setMuted((current) => !current);
-          }}
-          style={({ pressed }) => [
-            styles.button,
-            { top: insets.top + space.md, right: insets.right + space.lg },
-            (pressed || !ready) && styles.dimmed,
-          ]}>
-          <Text style={styles.icon} accessibilityElementsHidden importantForAccessibility="no">{muted ? '♪̸' : '♫'}</Text>
-          <Text style={styles.label}>{muted ? 'Ativar som' : 'Silenciar'}</Text>
-        </Pressable>
-      ) : null}
+      <Pressable
+        accessibilityRole="switch"
+        accessibilityLabel="Música e efeitos sonoros"
+        accessibilityHint={muted ? 'Ativar a música e os efeitos dos botões' : 'Silenciar a música e os efeitos dos botões'}
+        accessibilityState={{ checked: !muted, disabled: !ready }}
+        disabled={!ready}
+        onPress={() => {
+          // Start within the gesture so enabling music also works on the web.
+          const player = playerRef.current;
+          if (player) {
+            configurePlayer(player, !muted);
+            if (muted && enabled) player.play();
+            else player.pause();
+          }
+          if (!muted) playSound('tap');
+          setMuted(!muted);
+        }}
+        style={({ pressed }) => [
+          styles.button,
+          { top: insets.top + space.md, right: insets.right + space.lg },
+          (pressed || !ready) && styles.dimmed,
+        ]}>
+        <Text style={styles.icon} accessibilityElementsHidden importantForAccessibility="no">{muted ? '♪̸' : '♫'}</Text>
+        <Text style={styles.label}>{muted ? 'Ativar som' : 'Silenciar'}</Text>
+      </Pressable>
     </>
   );
 }
