@@ -1,0 +1,33 @@
+# Keep the exclusions from .gitignore when preparing cloud builds.
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+*.pem
+.env*.local
+*.tsbuildinfo
+example
+/ios
+/android
+
+# Local diagnostics and source artwork are not needed to build the app.
+/tmp/
+/artwork/
+/docs/
+
+# Unused source tracks.
+/assets/audios/musica 06.mp3
+/assets/audios/musica 08.mp3

@@ -7,6 +7,7 @@ import * as SystemUI from 'expo-system-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AppMusic } from '@/components/app-music';
 import { StartupVideo } from '@/components/startup-video';
 import { GameProvider } from '@/state/GameProvider';
 import { colors } from '@/theme/tokens';
@@ -50,6 +51,7 @@ export default function RootLayout() {
         </GameProvider>
       ) : null}
       {showIntro ? <StartupVideo onReady={hideSplash} onFinish={finishIntro} /> : null}
+      <AppMusic introVisible={showIntro} />
     </GestureHandlerRootView>
   );
 }
