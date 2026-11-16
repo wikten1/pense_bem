@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { NightScreen } from '@/components/game/ui';
 
 const backgrounds: Partial<Record<string, number>> = {
+  practice: require('../../../assets/images/modulo_treino.jpg'),
   p1: require('../../../assets/images/aladdin-quiz-background.jpg'),
   p2: require('../../../assets/images/abu-quiz-background.jpg'),
   p3: require('../../../assets/images/sultao.jpg'),

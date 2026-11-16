@@ -14,6 +14,16 @@ const quiz03Source = require('../../assets/audios/livro03.mp3');
 const quiz04Source = require('../../assets/audios/livro04.mp3');
 const quiz05Source = require('../../assets/audios/livro05.mp3');
 const quiz06Source = require('../../assets/audios/musica 07.mp3');
+const practiceSource = require('../../assets/audios/musica 08.mp3');
+const programSources: Partial<Record<string, number>> = {
+  p1: quiz01Source,
+  p2: quiz02Source,
+  p3: quiz03Source,
+  p4: quiz04Source,
+  p5: quiz05Source,
+  p6: quiz06Source,
+  practice: practiceSource,
+};
 const subscribeToClient = () => () => {};
 
 function configurePlayer(player: AudioPlayer, muted: boolean) {
@@ -77,14 +87,10 @@ export function AppMusic({ introVisible }: { introVisible: boolean }) {
 function MusicPlayer({ introVisible }: { introVisible: boolean }) {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const programId = /^\/(?:quiz|results)\/([^/]+)$/.exec(pathname)?.[1];
   const source = introVisible || pathname === '/' || pathname === '/programs'
     ? menuSource
-    : pathname === '/quiz/p1' ? quiz01Source
-      : pathname === '/quiz/p2' ? quiz02Source
-        : pathname === '/quiz/p3' ? quiz03Source
-          : pathname === '/quiz/p4' ? quiz04Source
-            : pathname === '/quiz/p5' ? quiz05Source
-              : pathname === '/quiz/p6' ? quiz06Source : null;
+    : (programId ? programSources[programId] : undefined) ?? null;
   const playerRef = useRef<AudioPlayer | null>(null);
   const { muted, setMuted, ready, enabled, playSound } = useAppAudio();
 
