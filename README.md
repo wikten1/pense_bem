@@ -21,6 +21,23 @@ npx eas-cli@latest build --profile development --platform android
 
 Troque a plataforma por `ios` quando necessário. As pastas nativas geradas não são a fonte da configuração: mantenha-a em `app.json` e plugins.
 
+## Publicação web na Vercel
+
+A versão web é uma aplicação estática, sem backend. `npm run build:web` exporta o site para `dist`; `vercel.json` configura o build e o redirecionamento das rotas do Expo Router, inclusive `/quiz/p1` e `/results/p1`, para a aplicação. O progresso fica no navegador de cada visitante e não é sincronizado entre dispositivos.
+
+Para testar a exportação localmente:
+
+```sh
+npm run build:web
+npx expo serve
+```
+
+Para publicar, envie estas configurações ao GitHub e importe este repositório no painel da Vercel. Mantenha o framework como **Other**, o comando de build como `npm run build:web` e a pasta de saída como `dist`. A configuração está versionada em `vercel.json`; commits enviados à branch de produção passam a gerar novos deploys quando a integração com Git estiver conectada.
+
+Selecione o workspace pessoal no plano Hobby para uma demonstração gratuita. O plano gratuito tem limites de uso e é destinado a projetos pessoais e não comerciais. Prefira a integração com GitHub: os arquivos de áudio, vídeo e imagens deste projeto excedem o limite de 100 MB de envio de fontes pelo CLI no plano Hobby.
+
+Antes de compartilhar o link, teste a abertura e atualização das rotas, uma partida com salvamento e retomada, áudio após interação com a página e download do livro. Navegadores podem bloquear reprodução de áudio antes da primeira interação.
+
 ## Organização
 
 | Pasta | Responsabilidade |
