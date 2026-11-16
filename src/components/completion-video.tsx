@@ -2,7 +2,11 @@ import { useEventListener } from 'expo';
 import { useAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useRef } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
+
+import { SoundPressable } from '@/components/sound-pressable';
+import { useAppAudio } from '@/state/AudioProvider';
+import { colors, space } from '@/theme/tokens';
 
 const videoSources = {
   p1: require('../../assets/videos/aladin.mp4'),
@@ -14,11 +18,13 @@ const videoSources = {
 };
 const applauseSource = require('../../assets/audios/aplausos.mp3');
 
-function loopAudio(player: AudioPlayer) {
+function configureApplause(player: AudioPlayer, muted: boolean) {
   player.loop = true;
+  player.muted = muted;
 }
 
 export function CompletionVideo({ programId, onFinish }: { programId: keyof typeof videoSources; onFinish: () => void }) {
+  const { enabled, muted, setMusicSuspended } = useAppAudio();
   const finished = useRef(false);
   const applause = useAudioPlayer(applauseSource);
   const video = useVideoPlayer(videoSources[programId], (player) => {
@@ -35,7 +41,7 @@ export function CompletionVideo({ programId, onFinish }: { programId: keyof type
   }
 
   useEventListener(video, 'playingChange', ({ isPlaying }) => {
-    if (isPlaying) applause.play();
+    if (isPlaying && enabled && !muted && !finished.current) applause.play();
     else applause.pause();
   });
   useEventListener(video, 'playToEnd', finish);
@@ -44,18 +50,29 @@ export function CompletionVideo({ programId, onFinish }: { programId: keyof type
   });
 
   useEffect(() => {
-    loopAudio(applause);
-    video.play();
+    setMusicSuspended(true);
     return () => {
+      setMusicSuspended(false);
       applause.pause();
       video.pause();
     };
-  }, [applause, video]);
+  }, [applause, video, setMusicSuspended]);
+
+  useEffect(() => {
+    configureApplause(applause, muted);
+    if (enabled && !finished.current) video.play();
+    else video.pause();
+    if (enabled && !muted && video.playing && !finished.current) applause.play();
+    else applause.pause();
+  }, [applause, enabled, muted, video]);
 
   return (
     <Modal visible animationType="fade" onRequestClose={finish}>
       <View style={styles.container}>
         <VideoView player={video} style={styles.video} contentFit="contain" nativeControls={false} playsInline />
+        <SoundPressable sound="back" accessibilityRole="button" onPress={finish} style={styles.close}>
+          <Text style={styles.closeText}>Ver resultado</Text>
+        </SoundPressable>
       </View>
     </Modal>
   );
@@ -64,4 +81,6 @@ export function CompletionVideo({ programId, onFinish }: { programId: keyof type
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   video: { flex: 1 },
+  close: { minHeight: 48, padding: space.md, alignItems: 'center', marginBottom: space.xl },
+  closeText: { color: colors.goldLight, fontSize: 16 },
 });

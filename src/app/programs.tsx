@@ -9,7 +9,7 @@ import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
 
 export default function ProgramsScreen() {
-  const { bestScore, history, startProgram, session } = useGame();
+  const { ready, bestScore, startProgram, session } = useGame();
   const [code, setCode] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
   const { viewport, onLayout } = useScreenViewport();
@@ -27,6 +27,7 @@ export default function ProgramsScreen() {
   }
 
   function confirmCode() {
+    if (!ready) return;
     const program = findProgramByEntryCode(code);
     if (!program) {
       setFeedback('Código não encontrado. Use um dos códigos da lista, como 041.');
@@ -59,15 +60,15 @@ export default function ProgramsScreen() {
             style={styles.input}
             accessibilityLabel="Código do livro"
           />
-          <GoldButton label="Confirmar código" onPress={confirmCode} disabled={code.trim().length === 0} />
-          {feedback ? <Text style={styles.feedback}>{feedback}</Text> : null}
+          <GoldButton label={ready ? 'Confirmar código' : 'Recuperando progresso…'} onPress={confirmCode} disabled={!ready || code.trim().length === 0} />
+          {feedback ? <Text accessibilityLiveRegion="polite" style={styles.feedback}>{feedback}</Text> : null}
         </Panel>
 
         <Panel>
           <Text style={styles.cardTitle}>Livro 04</Text>
           {ALADDIN_PROGRAMS.map((program, index) => {
             const best = bestScore(program.id);
-            const done = history.some((item) => item.programId === program.id && !item.pending);
+            const done = best !== null;
             return (
               <View key={program.id} style={[styles.programRow, index === 0 && styles.programRowFirst]}>
                 <View style={styles.number}>
@@ -89,7 +90,7 @@ export default function ProgramsScreen() {
         <Panel>
           <Text style={styles.cardTitle}>{PRACTICE_PROGRAM.title}</Text>
           <Text style={styles.body}>{PRACTICE_PROGRAM.notes}</Text>
-          <GoldButton label="Jogar o treino" onPress={() => openProgram(PRACTICE_PROGRAM.id)} variant="secondary" />
+          <GoldButton label="Jogar o treino" disabled={!ready} onPress={() => openProgram(PRACTICE_PROGRAM.id)} variant="secondary" />
         </Panel>
       </ScrollView>
     </NightScreen>

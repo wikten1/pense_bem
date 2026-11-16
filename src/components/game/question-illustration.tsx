@@ -8,47 +8,47 @@ import { SoundPressable } from '@/components/sound-pressable';
 import { colors, space } from '@/theme/tokens';
 
 const images: Record<IllustrationId, number> = {
-  'money-bank': require('../../../assets/images/questions/aladdin/money-bank.png'),
-  'time-objects': require('../../../assets/images/questions/aladdin/time-objects.png'),
-  'money-wallet': require('../../../assets/images/questions/aladdin/money-wallet.png'),
-  'wood-cutting': require('../../../assets/images/questions/aladdin/wood-cutting.png'),
-  'temperature-tools': require('../../../assets/images/questions/aladdin/temperature-tools.png'),
-  'liquid-measure': require('../../../assets/images/questions/aladdin/liquid-measure.png'),
-  'length-tools': require('../../../assets/images/questions/aladdin/length-tools.png'),
-  'person-scale': require('../../../assets/images/questions/aladdin/person-scale.png'),
-  'food-scale': require('../../../assets/images/questions/aladdin/food-scale.png'),
-  'mysterious-cave': require('../../../assets/images/questions/aladdin/mysterious-cave.png'),
-  grande: require('../../../assets/images/questions/aladdin/grande.png'),
-  alegre: require('../../../assets/images/questions/aladdin/alegre.png'),
-  sujo: require('../../../assets/images/questions/aladdin/sujo.png'),
-  doce: require('../../../assets/images/questions/aladdin/doce.png'),
-  curva: require('../../../assets/images/questions/aladdin/curva.png'),
-  noite: require('../../../assets/images/questions/aladdin/noite.png'),
-  fechado: require('../../../assets/images/questions/aladdin/fechado.png'),
-  gordo: require('../../../assets/images/questions/aladdin/gordo.png'),
+  'money-bank': require('../../../assets/images/questions/aladdin/money-bank.lossless.webp'),
+  'time-objects': require('../../../assets/images/questions/aladdin/time-objects.lossless.webp'),
+  'money-wallet': require('../../../assets/images/questions/aladdin/money-wallet.lossless.webp'),
+  'wood-cutting': require('../../../assets/images/questions/aladdin/wood-cutting.lossless.webp'),
+  'temperature-tools': require('../../../assets/images/questions/aladdin/temperature-tools.lossless.webp'),
+  'liquid-measure': require('../../../assets/images/questions/aladdin/liquid-measure.lossless.webp'),
+  'length-tools': require('../../../assets/images/questions/aladdin/length-tools.lossless.webp'),
+  'person-scale': require('../../../assets/images/questions/aladdin/person-scale.lossless.webp'),
+  'food-scale': require('../../../assets/images/questions/aladdin/food-scale.lossless.webp'),
+  'mysterious-cave': require('../../../assets/images/questions/aladdin/mysterious-cave.lossless.webp'),
+  grande: require('../../../assets/images/questions/aladdin/grande.lossless.webp'),
+  alegre: require('../../../assets/images/questions/aladdin/alegre.lossless.webp'),
+  sujo: require('../../../assets/images/questions/aladdin/sujo.lossless.webp'),
+  doce: require('../../../assets/images/questions/aladdin/doce.lossless.webp'),
+  curva: require('../../../assets/images/questions/aladdin/curva.lossless.webp'),
+  noite: require('../../../assets/images/questions/aladdin/noite.lossless.webp'),
+  fechado: require('../../../assets/images/questions/aladdin/fechado.lossless.webp'),
+  gordo: require('../../../assets/images/questions/aladdin/gordo.lossless.webp'),
   palace: require('../../../assets/images/questions/aladdin/palace.webp'),
-  'tiger-lunch': require('../../../assets/images/questions/aladdin/tiger-lunch.png'),
+  'tiger-lunch': require('../../../assets/images/questions/aladdin/tiger-lunch.lossless.webp'),
   'tiger-cubs': require('../../../assets/images/questions/aladdin/tiger-cubs.webp'),
   'tiger-calm': require('../../../assets/images/questions/aladdin/tiger-calm.webp'),
   'tiger-attack': require('../../../assets/images/questions/aladdin/tiger-attack.webp'),
   characters: require('../../../assets/images/questions/aladdin/characters.webp'),
   instruments: require('../../../assets/images/questions/aladdin/instruments.webp'),
   desert: require('../../../assets/images/questions/aladdin/desert.webp'),
-  'al-vegetables': require('../../../assets/images/questions/aladdin/al-vegetables.png'),
-  'al-safety-pin': require('../../../assets/images/questions/aladdin/al-safety-pin.png'),
-  'al-cushion': require('../../../assets/images/questions/aladdin/al-cushion.png'),
-  'al-pliers': require('../../../assets/images/questions/aladdin/al-pliers.png'),
-  'al-artichoke': require('../../../assets/images/questions/aladdin/al-artichoke.png'),
-  'al-cotton': require('../../../assets/images/questions/aladdin/al-cotton.png'),
-  'al-alcohol': require('../../../assets/images/questions/aladdin/al-alcohol.png'),
-  'sinbad-boats': require('../../../assets/images/questions/aladdin/sinbad-boats.png'),
-  'arabian-headwear': require('../../../assets/images/questions/aladdin/arabian-headwear.png'),
-  'arabian-footwear': require('../../../assets/images/questions/aladdin/arabian-footwear.png'),
-  'arabian-vest': require('../../../assets/images/questions/aladdin/arabian-vest.png'),
-  'arabian-trousers': require('../../../assets/images/questions/aladdin/arabian-trousers.png'),
-  'aladdin-lamp': require('../../../assets/images/questions/aladdin/aladdin-lamp.png'),
-  'ancient-objects': require('../../../assets/images/questions/aladdin/ancient-objects.png'),
-  crossword: require('../../../assets/images/questions/aladdin/crossword.png'),
+  'al-vegetables': require('../../../assets/images/questions/aladdin/al-vegetables.lossless.webp'),
+  'al-safety-pin': require('../../../assets/images/questions/aladdin/al-safety-pin.lossless.webp'),
+  'al-cushion': require('../../../assets/images/questions/aladdin/al-cushion.lossless.webp'),
+  'al-pliers': require('../../../assets/images/questions/aladdin/al-pliers.lossless.webp'),
+  'al-artichoke': require('../../../assets/images/questions/aladdin/al-artichoke.lossless.webp'),
+  'al-cotton': require('../../../assets/images/questions/aladdin/al-cotton.lossless.webp'),
+  'al-alcohol': require('../../../assets/images/questions/aladdin/al-alcohol.lossless.webp'),
+  'sinbad-boats': require('../../../assets/images/questions/aladdin/sinbad-boats.lossless.webp'),
+  'arabian-headwear': require('../../../assets/images/questions/aladdin/arabian-headwear.lossless.webp'),
+  'arabian-footwear': require('../../../assets/images/questions/aladdin/arabian-footwear.lossless.webp'),
+  'arabian-vest': require('../../../assets/images/questions/aladdin/arabian-vest.lossless.webp'),
+  'arabian-trousers': require('../../../assets/images/questions/aladdin/arabian-trousers.lossless.webp'),
+  'aladdin-lamp': require('../../../assets/images/questions/aladdin/aladdin-lamp.lossless.webp'),
+  'ancient-objects': require('../../../assets/images/questions/aladdin/ancient-objects.lossless.webp'),
+  crossword: require('../../../assets/images/questions/aladdin/crossword.lossless.webp'),
   bay: require('../../../assets/images/questions/aladdin/bay.webp'),
   island: require('../../../assets/images/questions/aladdin/island.webp'),
   reef: require('../../../assets/images/questions/aladdin/reef.webp'),
@@ -60,11 +60,11 @@ const images: Record<IllustrationId, number> = {
   unicorn: require('../../../assets/images/questions/aladdin/unicorn.webp'),
   werewolf: require('../../../assets/images/questions/aladdin/werewolf.webp'),
   puzzle: require('../../../assets/images/questions/aladdin/puzzle.webp'),
-  sherazade: require('../../../assets/images/questions/aladdin/sherazade-options.png'),
+  sherazade: require('../../../assets/images/questions/aladdin/sherazade-options.lossless.webp'),
   'ali-baba-sequence': require('../../../assets/images/questions/aladdin/ali-baba-sequence.webp'),
-  cinema: require('../../../assets/images/questions/aladdin/cinema.png'),
-  filmmaking: require('../../../assets/images/questions/aladdin/filmmaking.png'),
-  'genie-sequence': require('../../../assets/images/questions/aladdin/genie-sequence.png'),
+  cinema: require('../../../assets/images/questions/aladdin/cinema.lossless.webp'),
+  filmmaking: require('../../../assets/images/questions/aladdin/filmmaking.lossless.webp'),
+  'genie-sequence': require('../../../assets/images/questions/aladdin/genie-sequence.lossless.webp'),
   orchestra: require('../../../assets/images/questions/aladdin/orchestra.webp'),
   'home-video': require('../../../assets/images/questions/aladdin/home-video.png'),
 };
@@ -87,7 +87,7 @@ export function QuestionIllustration({ illustration }: { illustration: Illustrat
         <Image source={source} style={[styles.image, { aspectRatio }]} contentFit="contain" />
         <Text style={styles.caption}>Toque para ampliar a ilustração</Text>
       </SoundPressable>
-      <Modal visible={expanded} animationType="fade" onRequestClose={() => setExpanded(false)}>
+      {expanded ? <Modal visible animationType="fade" onRequestClose={() => setExpanded(false)}>
         <View style={[styles.modal, { paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space.md }]} accessibilityViewIsModal>
           <SoundPressable sound="back" accessibilityRole="button" onPress={() => setExpanded(false)} style={styles.close}>
             <Text style={styles.closeText}>Fechar ilustração</Text>
@@ -104,7 +104,7 @@ export function QuestionIllustration({ illustration }: { illustration: Illustrat
             </ScrollView>
           </ScrollView>
         </View>
-      </Modal>
+      </Modal> : null}
     </View>
   );
 }

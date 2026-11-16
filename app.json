@@ -37,11 +37,16 @@
       "expo-video",
       "expo-asset",
       "expo-sharing",
-      ["expo-audio", {
-        "microphonePermission": false,
-        "recordAudioAndroid": false,
-        "enableBackgroundPlayback": false
-      }]
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
+      "expo-image",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -92,13 +92,13 @@ function MusicPlayer({ introVisible }: { introVisible: boolean }) {
     ? menuSource
     : (programId ? programSources[programId] : undefined) ?? null;
   const playerRef = useRef<AudioPlayer | null>(null);
-  const { muted, setMuted, ready, enabled, playSound } = useAppAudio();
+  const { muted, setMuted, ready, enabled, playSound, musicSuspended } = useAppAudio();
 
   return (
     <>
       {/* Release the previous decoder instead of loading every book at startup. */}
       {source !== null ? (
-        <MusicTrack key={source} source={source} muted={muted} enabled={enabled} playerRef={playerRef} />
+        <MusicTrack key={source} source={source} muted={muted} enabled={enabled && !musicSuspended} playerRef={playerRef} />
       ) : null}
       <Pressable
         accessibilityRole="switch"
@@ -111,7 +111,7 @@ function MusicPlayer({ introVisible }: { introVisible: boolean }) {
           const player = playerRef.current;
           if (player) {
             configurePlayer(player, !muted);
-            if (muted && enabled) player.play();
+            if (muted && enabled && !musicSuspended) player.play();
             else player.pause();
           }
           if (!muted) playSound('tap');

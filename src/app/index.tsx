@@ -23,7 +23,7 @@ function HomeLead({ viewport }: { viewport: Viewport }) {
 }
 
 export default function HomeScreen() {
-  const { ready, persistent, session } = useGame();
+  const { ready, persistent, session, saveError } = useGame();
   const current = session?.status === 'in_progress' ? findProgram(session.programId) : undefined;
   const { viewport, onLayout } = useScreenViewport();
   const [downloading, setDownloading] = useState(false);
@@ -69,9 +69,11 @@ export default function HomeScreen() {
           {downloadError ? <Text accessibilityRole="alert" style={styles.note}>{downloadError}</Text> : null}
         </View>
 
-        {ready && !persistent ? (
+        {saveError ? <Text accessibilityRole="alert" style={styles.note}>{saveError}</Text> : null}
+        {!ready ? <Text accessibilityLiveRegion="polite" style={styles.note}>Recuperando progresso…</Text> : null}
+        {ready && !persistent && !saveError ? (
           <Text style={styles.note}>
-            Este build ainda não grava a partida ao fechar o aplicativo. Recompile o app de desenvolvimento para ativar o armazenamento local.
+            O armazenamento local não está disponível. Seu progresso ficará disponível apenas enquanto o aplicativo estiver aberto.
           </Text>
         ) : null}
       </ScrollView>

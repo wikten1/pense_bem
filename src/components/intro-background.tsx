@@ -2,6 +2,7 @@ import { useFocusEffect } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useCallback, useState } from 'react';
 import { Platform, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { useAppActive } from '@/hooks/use-app-active';
 
 const source = require('../../assets/videos/background_intro.mp4');
 
@@ -35,6 +36,7 @@ export function videoFrame(screenWidth: number, screenHeight: number) {
 }
 
 export function IntroBackground({ viewport }: { viewport: Viewport | null }) {
+  const appActive = useAppActive();
   const frame = viewport ? videoFrame(viewport.width, viewport.height) : null;
   const player = useVideoPlayer(source, (video) => {
     video.muted = true;
@@ -45,16 +47,16 @@ export function IntroBackground({ viewport }: { viewport: Viewport | null }) {
       video.audioMixingMode = 'mixWithOthers';
       video.showNowPlayingNotification = false;
     }
-    video.play();
   });
 
   useFocusEffect(
     useCallback(() => {
-      player.play();
+      if (appActive) player.play();
+      else player.pause();
       return () => {
         player.pause();
       };
-    }, [player]),
+    }, [appActive, player]),
   );
 
   return (

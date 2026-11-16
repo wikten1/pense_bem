@@ -1,0 +1,289 @@
+[
+  {
+    "source": "assets/images/questions/aladdin/money-bank.png",
+    "before": 1314460,
+    "after": 818350,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/money-bank.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/time-objects.png",
+    "before": 1360840,
+    "after": 800620,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/time-objects.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/money-wallet.png",
+    "before": 1340231,
+    "after": 792582,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/money-wallet.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/wood-cutting.png",
+    "before": 1403750,
+    "after": 809620,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/wood-cutting.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/temperature-tools.png",
+    "before": 1312286,
+    "after": 767596,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/temperature-tools.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/liquid-measure.png",
+    "before": 1236419,
+    "after": 742918,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/liquid-measure.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/length-tools.png",
+    "before": 1295575,
+    "after": 734872,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/length-tools.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/person-scale.png",
+    "before": 1342599,
+    "after": 783474,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/person-scale.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/food-scale.png",
+    "before": 1297098,
+    "after": 757282,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/food-scale.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/mysterious-cave.png",
+    "before": 1821471,
+    "after": 978980,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/mysterious-cave.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/grande.png",
+    "before": 1574942,
+    "after": 805620,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/grande.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/alegre.png",
+    "before": 1449775,
+    "after": 738546,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/alegre.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/sujo.png",
+    "before": 1669849,
+    "after": 871314,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/sujo.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/doce.png",
+    "before": 1556925,
+    "after": 784436,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/doce.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/curva.png",
+    "before": 1715184,
+    "after": 925956,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/curva.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/noite.png",
+    "before": 1723645,
+    "after": 947240,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/noite.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/fechado.png",
+    "before": 1360628,
+    "after": 644876,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/fechado.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/gordo.png",
+    "before": 1486094,
+    "after": 749348,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/gordo.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/tiger-lunch.png",
+    "before": 1258829,
+    "after": 657710,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/tiger-lunch.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/al-vegetables.png",
+    "before": 1202566,
+    "after": 645334,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/al-vegetables.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/al-safety-pin.png",
+    "before": 1315049,
+    "after": 712048,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/al-safety-pin.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/al-cushion.png",
+    "before": 1286427,
+    "after": 701804,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/al-cushion.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/al-pliers.png",
+    "before": 1222098,
+    "after": 606054,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/al-pliers.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/al-artichoke.png",
+    "before": 1735301,
+    "after": 837778,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/al-artichoke.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/al-cotton.png",
+    "before": 1262058,
+    "after": 654984,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/al-cotton.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/al-alcohol.png",
+    "before": 1282927,
+    "after": 676686,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/al-alcohol.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/sinbad-boats.png",
+    "before": 1500134,
+    "after": 820056,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/sinbad-boats.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/arabian-headwear.png",
+    "before": 1185582,
+    "after": 591648,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/arabian-headwear.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/arabian-footwear.png",
+    "before": 1221113,
+    "after": 612750,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/arabian-footwear.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/arabian-vest.png",
+    "before": 1274553,
+    "after": 673574,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/arabian-vest.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/arabian-trousers.png",
+    "before": 1347251,
+    "after": 706044,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/arabian-trousers.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/aladdin-lamp.png",
+    "before": 1172182,
+    "after": 604958,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/aladdin-lamp.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/ancient-objects.png",
+    "before": 1141755,
+    "after": 548550,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/ancient-objects.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/crossword.png",
+    "before": 1549135,
+    "after": 795800,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/crossword.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/sherazade-options.png",
+    "before": 1395731,
+    "after": 771244,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/sherazade-options.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/cinema.png",
+    "before": 2047982,
+    "after": 1067930,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/cinema.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/filmmaking.png",
+    "before": 2271335,
+    "after": 1297066,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/filmmaking.lossless.webp"
+  },
+  {
+    "source": "assets/images/questions/aladdin/genie-sequence.png",
+    "before": 1342741,
+    "after": 768046,
+    "pixelsIdentical": true,
+    "output": "assets/images/questions/aladdin/genie-sequence.lossless.webp"
+  },
+  {
+    "source": "assets/images/jasmine-quiz-background.png",
+    "before": 1403802,
+    "after": 851256,
+    "pixelsIdentical": true,
+    "output": "assets/images/jasmine-quiz-background.lossless.webp"
+  },
+  {
+    "source": "assets/images/iago-quiz-background.png",
+    "before": 3470201,
+    "after": 2082384,
+    "pixelsIdentical": true,
+    "output": "assets/images/iago-quiz-background.lossless.webp"
+  },
+  {
+    "source": "assets/images/genie-quiz-background.png",
+    "before": 2858322,
+    "after": 1677554,
+    "pixelsIdentical": true,
+    "output": "assets/images/genie-quiz-background.lossless.webp"
+  }
+]

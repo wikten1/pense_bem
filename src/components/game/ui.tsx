@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,13 +8,11 @@ import { colors, fonts, space } from '@/theme/tokens';
 
 export function NightScreen({
   children,
-  background,
   backdrop,
   overlay,
   onLayout,
 }: {
   children: ReactNode;
-  background?: 'image' | 'gradient';
   backdrop?: ReactNode;
   overlay?: ReactNode;
   onLayout?: (event: LayoutChangeEvent) => void;
@@ -23,22 +20,12 @@ export function NightScreen({
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.fill} onLayout={onLayout}>
-      {backdrop ??
-        (background === 'image' ? (
-          <>
-            <Image
-              source={require('../../../assets/images/home-background.png')}
-              style={StyleSheet.absoluteFill}
-              contentFit="cover"
-            />
-            <View style={styles.imageScrim} />
-          </>
-        ) : (
-          <>
-            <View style={styles.nightFill} />
-            <View style={styles.duskBand} />
-          </>
-        ))}
+      {backdrop ?? (
+        <>
+          <View style={styles.nightFill} />
+          <View style={styles.duskBand} />
+        </>
+      )}
       {overlay}
       <View style={[styles.content, { paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space.md }]}>
         {children}
@@ -166,14 +153,6 @@ const styles = StyleSheet.create({
     height: '46%',
     backgroundColor: colors.accentPurple,
     opacity: 0.9,
-  },
-  imageScrim: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: 'rgba(14,30,76,0.35)',
   },
   primaryButton: {
     backgroundColor: colors.gold,

@@ -1,0 +1,54 @@
+{
+  "method": "Uncompressed Android export files from metadata.json; same platform and production mode. Save fixtures: new session, seed 123, empty history/ledger. These are size measurements, not APK size, startup time, FPS or memory measurements.",
+  "before": {
+    "bundleBytes": 4326209,
+    "assetBytes": 189006165,
+    "assets": 124,
+    "fontBytes": 1432680,
+    "fonts": 7
+  },
+  "after": {
+    "bundleBytes": 4077657,
+    "assetBytes": 158014232,
+    "assets": 119,
+    "fontBytes": 230712,
+    "fonts": 3
+  },
+  "saves": [
+    {
+      "programId": "p1",
+      "beforeBytes": 21145,
+      "afterBytes": 2435
+    },
+    {
+      "programId": "p2",
+      "beforeBytes": 25135,
+      "afterBytes": 2453
+    },
+    {
+      "programId": "p3",
+      "beforeBytes": 26612,
+      "afterBytes": 2453
+    },
+    {
+      "programId": "p4",
+      "beforeBytes": 26820,
+      "afterBytes": 2495
+    },
+    {
+      "programId": "p5",
+      "beforeBytes": 27575,
+      "afterBytes": 2513
+    },
+    {
+      "programId": "p6",
+      "beforeBytes": 23835,
+      "afterBytes": 2473
+    },
+    {
+      "programId": "practice",
+      "beforeBytes": 1504,
+      "afterBytes": 467
+    }
+  ]
+}

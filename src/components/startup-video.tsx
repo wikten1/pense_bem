@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { colors } from '@/theme/tokens';
+import { useAppActive } from '@/hooks/use-app-active';
 
 const INTRO_MS = 2000;
 const FALLBACK_MS = 1200;
@@ -15,6 +16,7 @@ type StartupVideoProps = {
 };
 
 export function StartupVideo({ onReady, onFinish }: StartupVideoProps) {
+  const appActive = useAppActive();
   const started = useRef(false);
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -26,8 +28,12 @@ export function StartupVideo({ onReady, onFinish }: StartupVideoProps) {
       video.audioMixingMode = 'mixWithOthers';
       video.showNowPlayingNotification = false;
     }
-    video.play();
   });
+
+  useEffect(() => {
+    if (appActive) player.play();
+    else player.pause();
+  }, [appActive, player]);
 
   const begin = useCallback(() => {
     if (started.current) {

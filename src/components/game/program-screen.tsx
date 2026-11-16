@@ -9,9 +9,9 @@ const backgrounds: Partial<Record<string, number>> = {
   p1: require('../../../assets/images/aladdin-quiz-background.jpg'),
   p2: require('../../../assets/images/abu-quiz-background.jpg'),
   p3: require('../../../assets/images/sultao.jpg'),
-  p4: require('../../../assets/images/jasmine-quiz-background.png'),
-  p5: require('../../../assets/images/iago-quiz-background.png'),
-  p6: require('../../../assets/images/genie-quiz-background.png'),
+  p4: require('../../../assets/images/jasmine-quiz-background.lossless.webp'),
+  p5: require('../../../assets/images/iago-quiz-background.lossless.webp'),
+  p6: require('../../../assets/images/genie-quiz-background.lossless.webp'),
 };
 
 export function ProgramScreen({ children, programId }: { children: ReactNode; programId?: string }) {

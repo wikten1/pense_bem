@@ -1,56 +1,69 @@
-# Welcome to your Expo app 👋
+# Pense Bem — Aladdin
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo Expo/React Native para jogar as 150 perguntas de **Aladdin em Os Mistérios do Oriente**, com cinco programas sequenciais, revisão com sorteio, treino, retomada de partida, resultados e Nota Desafio. Inclui ilustrações ampliáveis, músicas, efeitos, vídeos e o livro em PDF. O conteúdo funciona localmente, sem backend.
 
-## Get started
+## Desenvolvimento
 
-1. Install dependencies
+O projeto utiliza npm e Expo SDK 58. Instale a versão de Node compatível com o SDK e use o lockfile:
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```sh
+npm ci
+npm start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Para abrir uma plataforma, use `npm run android`, `npm run ios` ou `npm run web`. Ao adicionar um pacote, utilize `npx expo install <pacote>` para resolver versões compatíveis. No PowerShell com scripts bloqueados, use `npm.cmd` e `npx.cmd`.
 
-### Other setup steps
+As mudanças em módulos nativos exigem um novo development build. Para o perfil já configurado no EAS:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```sh
+npx eas-cli@latest build --profile development --platform android
+```
 
-## Learn more
+Troque a plataforma por `ios` quando necessário. As pastas nativas geradas não são a fonte da configuração: mantenha-a em `app.json` e plugins.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Organização
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+| Pasta | Responsabilidade |
+| --- | --- |
+| `src/app` | Telas e layout do Expo Router |
+| `src/components/game` | Interface do jogo, ilustrações, fundo e itens do histórico |
+| `src/components` | Players e interações compartilhadas |
+| `src/content` | Perguntas da revista e metadados das ilustrações |
+| `src/game` | Pontuação, tentativas, sorteio, senhas e restauração de sessão |
+| `src/state` | Integração do progresso e das preferências de áudio com React |
+| `src/storage` | Adaptador de armazenamento e formato validado dos salvamentos |
+| `src/services` | Efeitos e download do PDF, com implementação específica para web |
+| `src/hooks` | Estado compartilhado de primeiro plano do aplicativo |
+| `src/theme` | Cores, fontes e espaçamentos |
+| `assets` | Recursos locais usados pelo aplicativo e originais de imagem |
+| `artwork`, `scripts`, `docs` | Matrizes, ferramentas de arte e documentação |
 
-## Join the community
+O progresso usa a chave `pense-bem-aladdin-v1`; o leitor aceita o formato completo anterior e o formato compacto atual. Conteúdo e pontos derivados são reconstruídos com as regras do catálogo. Registros inválidos não são sobrescritos automaticamente. A preferência de silêncio continua na chave `pense-bem:music-muted`.
 
-Join our community of developers creating universal apps.
+## Verificação
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```sh
+npm run lint
+npm run typecheck
+npm test
+npm run images:check
+npx expo-doctor
+npx expo install --check
+```
+
+`npm test` executa as regras, a persistência e os efeitos sonoros; `npm run test:audio` executa somente os efeitos. `images:check` compara dimensões e pixels de todos os derivados sem perdas usados pelas telas.
+
+## Recursos e métricas
+
+Após modificar um PNG utilizado pelas telas, execute `npm run images:optimize`. O script cria apenas derivados menores com pixels idênticos e nomes `*.lossless.webp`, atualiza as referências e registra os tamanhos em `docs/runtime-images.json`. Os originais e os WebPs do processo editorial são preservados. As ferramentas editoriais anteriores continuam disponíveis em `npm run images:aladdin` e `npm run images:aladdin:scan`.
+
+Para gerar um export de produção e comparar com a referência local capturada antes da otimização:
+
+```sh
+npx expo export --platform all --output-dir tmp/optimization-final --dump-assetmap
+node --experimental-strip-types scripts/measure-optimization.mjs
+```
+
+A medição exige `tmp/optimization-before`, criado na análise inicial; essa pasta temporária não é versionada. Os resultados registrados estão em [docs/optimization-metrics.json](docs/optimization-metrics.json), e o script aceita caminhos alternativos como primeiro e segundo argumentos.
+
+Leia o [relatório de análise e otimização](docs/relatorio-otimizacao.md) para alterações, evidências, alertas de segurança remanescentes e validações que ainda exigem aparelho. As regras editoriais estão em [docs/perguntas-e-respostas.md](docs/perguntas-e-respostas.md).

@@ -1,4 +1,6 @@
-import { Cinzel_400Regular, Cinzel_600SemiBold, Cinzel_700Bold } from '@expo-google-fonts/cinzel';
+import { Cinzel_400Regular } from '@expo-google-fonts/cinzel/400Regular';
+import { Cinzel_600SemiBold } from '@expo-google-fonts/cinzel/600SemiBold';
+import { Cinzel_700Bold } from '@expo-google-fonts/cinzel/700Bold';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -13,7 +15,7 @@ import { GameProvider } from '@/state/GameProvider';
 import { AudioProvider } from '@/state/AudioProvider';
 import { colors } from '@/theme/tokens';
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync().catch((error) => console.warn('Não foi possível manter a tela de abertura.', error));
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -26,11 +28,11 @@ export default function RootLayout() {
   const showIntro = !introHeld || !appReady;
 
   useEffect(() => {
-    SystemUI.setBackgroundColorAsync(colors.background);
+    void SystemUI.setBackgroundColorAsync(colors.background).catch((error) => console.warn('Não foi possível configurar o fundo do sistema.', error));
   }, []);
 
   const hideSplash = useCallback(() => {
-    SplashScreen.hideAsync();
+    void SplashScreen.hideAsync().catch((error) => console.warn('Não foi possível ocultar a tela de abertura.', error));
   }, []);
 
   const finishIntro = useCallback(() => {

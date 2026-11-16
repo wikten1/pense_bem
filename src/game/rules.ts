@@ -371,6 +371,7 @@ export function restoreSession(value: unknown): Session {
   if (!saved || typeof saved.id !== 'string' || !saved.id ||
       typeof saved.startedAt !== 'string' || !Number.isFinite(Date.parse(saved.startedAt)) ||
       !Number.isInteger(saved.index) || !Array.isArray(saved.quiz) || !saved.questions ||
+      (saved.seed !== undefined && (!Number.isSafeInteger(saved.seed) || saved.seed < 0)) ||
       !['in_progress', 'finished'].includes(saved.status)) {
     throw new Error('Partida salva inválida.');
   }

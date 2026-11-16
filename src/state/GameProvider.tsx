@@ -5,44 +5,17 @@ import {
   applyAnswer,
   buildQuiz,
   createSession,
-  emptyLedger,
-  findProgram,
   goToNext,
   notaDesafio,
-  passwordFor,
   programIdByNumber,
   redeemPassword,
-  restoreSession,
-  sessionStats,
   type AnswerEvent,
   type ChoiceId,
   type Ledger,
   type Session,
 } from '@/game/rules';
 import { openStore } from '@/storage/store';
-
-const STORAGE_KEY = 'pense-bem-aladdin-v1';
-
-export type HistoryEntry = {
-  id: string;
-  programId: string;
-  programNumber: number;
-  programTitle: string;
-  score: number;
-  maxScore: number;
-  correct: number;
-  missed: number;
-  pending?: number;
-  percent: number;
-  finishedAt: string;
-  password: string | null;
-};
-
-type SaveData = {
-  session: Session | null;
-  history: HistoryEntry[];
-  ledger: Ledger;
-};
+import { emptySave, GAME_STORAGE_KEY, readSave, serializeSave, toHistory, type HistoryEntry, type SaveData } from '@/storage/game-save';
 
 type GameContextValue = {
   ready: boolean;
@@ -62,44 +35,6 @@ type GameContextValue = {
 
 const GameContext = createContext<GameContextValue | null>(null);
 
-function emptySave(): SaveData {
-  return { session: null, history: [], ledger: emptyLedger() };
-}
-
-function readSave(raw: string | null): SaveData {
-  if (!raw) {
-    return emptySave();
-  }
-  const parsed = JSON.parse(raw) as Partial<SaveData>;
-  return {
-    session: parsed.session ? restoreSession(parsed.session) : null,
-    history: Array.isArray(parsed.history) ? parsed.history : [],
-    ledger: parsed.ledger?.codes && parsed.ledger.byProgram ? parsed.ledger : emptyLedger(),
-  };
-}
-
-function toHistory(session: Session): HistoryEntry | null {
-  const program = findProgram(session.programId);
-  if (!program || !session.finishedAt) {
-    return null;
-  }
-  const stats = sessionStats(session);
-  return {
-    id: session.id,
-    programId: session.programId,
-    programNumber: program.number,
-    programTitle: program.title,
-    score: stats.score,
-    maxScore: stats.maxScore,
-    correct: stats.correct,
-    missed: stats.missed,
-    pending: stats.pending,
-    percent: stats.percent,
-    finishedAt: session.finishedAt,
-    password: passwordFor(session),
-  };
-}
-
 export function GameProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<SaveData>(emptySave);
   const dataRef = useRef(data);
@@ -108,10 +43,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [persistent, setPersistent] = useState(true);
   const [saveError, setSaveError] = useState<string | null>(null);
   const writesRef = useRef(Promise.resolve());
-
-  useEffect(() => {
-    dataRef.current = data;
-  }, [data]);
 
   const update = useCallback((recipe: (current: SaveData) => SaveData) => {
     const next = recipe(dataRef.current);
@@ -124,13 +55,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     let active = true;
     openStore()
       .then(async ({ store, persistent: canPersist }) => {
-        storeRef.current = store;
-        const raw = await store.getItem(STORAGE_KEY);
+        const raw = await store.getItem(GAME_STORAGE_KEY);
         if (!active) {
           return;
         }
         setPersistent(canPersist);
         const restored = readSave(raw);
+        storeRef.current = store;
         dataRef.current = restored;
         setData(restored);
         setReady(true);
@@ -153,9 +84,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return;
     }
     const store = storeRef.current;
-    const snapshot = JSON.stringify(data);
+    const snapshot = serializeSave(data);
     writesRef.current = writesRef.current
-      .then(() => store.setItem(STORAGE_KEY, snapshot))
+      .then(() => store.setItem(GAME_STORAGE_KEY, snapshot))
       .then(() => setSaveError(null))
       .catch(() => setSaveError('Não foi possível salvar a última ação. Mantenha o aplicativo aberto; a próxima ação tentará salvar novamente.'));
   }, [data, ready]);
@@ -180,7 +111,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
       const result = applyAnswer(current.session, choiceId, questionId);
       event = result.event;
-      return { ...current, session: result.session };
+      return result.session === current.session ? current : { ...current, session: result.session };
     });
     return event;
   }, [update]);
@@ -188,7 +119,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const review = useCallback((questionId: string, sessionId: string) => {
     update((current) => {
       if (!current.session || current.session.id !== sessionId) return current;
-      return { ...current, session: acknowledgeReview(current.session, questionId) };
+      const session = acknowledgeReview(current.session, questionId);
+      return session === current.session ? current : { ...current, session };
     });
   }, [update]);
 
@@ -199,6 +131,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         return current;
       }
       const session = goToNext(current.session, new Date().toISOString(), questionId);
+      if (session === current.session) {
+        if (session.status === 'finished') finished = session;
+        return current;
+      }
       if (session.status !== 'finished') {
         return { ...current, session };
       }
@@ -212,6 +148,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const redeem = useCallback((code: string) => {
     let result: ReturnType<typeof redeemPassword> = { ok: false, reason: 'invalid' };
+    if (!ready) return result;
     update((current) => {
       result = redeemPassword(current.ledger, code, programIdByNumber);
       if (!result.ok) {
@@ -220,18 +157,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return { ...current, ledger: result.ledger };
     });
     return result;
-  }, [update]);
+  }, [ready, update]);
 
-  const bestScore = useCallback(
-    (programId: string) => {
-      const scores = data.history.filter((item) => item.programId === programId && !item.pending).map((item) => item.score);
-      if (scores.length === 0) {
-        return null;
-      }
-      return Math.max(...scores);
-    },
-    [data.history],
-  );
+  const bestScores = useMemo(() => {
+    const scores = new Map<string, number>();
+    for (const entry of data.history) {
+      if (!entry.pending) scores.set(entry.programId, Math.max(scores.get(entry.programId) ?? 0, entry.score));
+    }
+    return scores;
+  }, [data.history]);
+  const bestScore = useCallback((programId: string) => bestScores.get(programId) ?? null, [bestScores]);
 
   const value = useMemo<GameContextValue>(
     () => ({

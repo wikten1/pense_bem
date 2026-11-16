@@ -5,18 +5,20 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GoldButton, Panel } from '@/components/game/ui';
 import { ProgramScreen } from '@/components/game/program-screen';
 import { CompletionVideo } from '@/components/completion-video';
-import { PASSWORD_NOTE, buildQuiz, findProgram } from '@/game/rules';
+import { PASSWORD_NOTE, findProgram } from '@/game/rules';
+import { passwordFeedback } from '@/game/password-feedback';
 import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
 
 export default function ResultsScreen() {
   const { programId: rawId, celebrate } = useLocalSearchParams<{ programId: string; celebrate?: string }>();
   const [showCelebration, setShowCelebration] = useState(celebrate === '1');
+  const [feedback, setFeedback] = useState<string | null>(null);
   const programId = Array.isArray(rawId) ? rawId[0] : rawId;
-  const { history, ledger, notaDesafio, redeem, startProgram, saveError } = useGame();
+  const { ready, history, ledger, notaDesafio, redeem, startProgram, saveError } = useGame();
   const entry = history.find((item) => item.programId === programId);
   const program = programId ? findProgram(programId) : undefined;
-  const canReplay = programId ? buildQuiz(programId, 1) !== null : false;
+  const canReplay = program !== undefined;
   const redeemed = entry?.password ? ledger.codes.includes(entry.password) : false;
 
   function playAgain() {
@@ -48,13 +50,17 @@ export default function ResultsScreen() {
             {entry.password ? (
               <>
                 <Text style={styles.label}>Senha desta partida</Text>
-                <Text style={styles.password}>{entry.password}</Text>
+                <Text selectable style={styles.password}>{entry.password}</Text>
                 <Text style={styles.body}>{redeemed ? 'Esta senha já entrou na Nota Desafio.' : 'Ainda não resgatada.'}</Text>
                 <GoldButton
                   label={redeemed ? 'Senha já utilizada' : 'Usar senha na Nota Desafio'}
                   disabled={redeemed}
-                  onPress={() => redeem(entry.password!)}
+                  onPress={() => {
+                    const result = redeem(entry.password!);
+                    setFeedback(result.ok ? passwordFeedback[result.replaced ? 'replaced' : 'ok'] : passwordFeedback[result.reason]);
+                  }}
                 />
+                {feedback ? <Text accessibilityLiveRegion="polite" style={styles.body}>{feedback}</Text> : null}
               </>
             ) : (
               <Text style={styles.body}>{entry.pending ? 'Este resultado parcial não gera senha nem selo de programa concluído.' : 'O treino não gera senha. A senha só existe para um programa da revista concluído com 30 perguntas avaliadas.'}</Text>
@@ -64,12 +70,12 @@ export default function ResultsScreen() {
             <Text style={styles.body}>{PASSWORD_NOTE}</Text>
           </Panel>
         ) : (
-          <Text style={styles.body}>Ainda não há um resultado salvo para este programa.</Text>
+          <Text style={styles.body}>{ready ? 'Ainda não há um resultado salvo para este programa.' : 'Recuperando progresso…'}</Text>
         )}
-        {canReplay ? <GoldButton label="Jogar novamente" onPress={playAgain} variant="secondary" /> : null}
+        {canReplay ? <GoldButton label="Jogar novamente" disabled={!ready} onPress={playAgain} variant="secondary" /> : null}
         <GoldButton label="Voltar aos programas" onPress={() => router.replace('/programs')} variant="secondary" />
       </ScrollView>
-      {showCelebration && (programId === 'p1' || programId === 'p2' || programId === 'p3' || programId === 'p4' || programId === 'p5' || programId === 'p6') ? (
+      {ready && entry && showCelebration && (programId === 'p1' || programId === 'p2' || programId === 'p3' || programId === 'p4' || programId === 'p5' || programId === 'p6') ? (
         <CompletionVideo programId={programId} onFinish={() => setShowCelebration(false)} />
       ) : null}
     </ProgramScreen>

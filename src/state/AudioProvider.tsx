@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, useSyn
 import { AppState, Platform } from 'react-native';
 
 import { replayButtonSound } from '@/services/replayButtonSound';
+import { useAppActive } from '@/hooks/use-app-active';
 import { openStore } from '@/storage/store';
 
 export type ButtonSound = 'tap' | 'back' | 'red' | 'yellow' | 'blue' | 'green';
@@ -15,14 +16,11 @@ const AudioContext = createContext({
   muted: false,
   ready: false,
   enabled: false,
+  musicSuspended: false,
+  setMusicSuspended: (_suspended: boolean) => {},
   setMuted: (_muted: boolean) => {},
   playSound: (_sound: ButtonSound) => {},
 });
-
-function subscribeToAppState(onChange: () => void) {
-  const subscription = AppState.addEventListener('change', onChange);
-  return () => subscription.remove();
-}
 
 function SoundPlayers({ playersRef, enabled }: { playersRef: RefObject<PlayerMap | null>; enabled: boolean }) {
   // One shared, preloaded player per sound; never allocate a decoder per button.
@@ -60,14 +58,15 @@ function SoundPlayers({ playersRef, enabled }: { playersRef: RefObject<PlayerMap
 
 export function AudioProvider({ children }: { children: ReactNode }) {
   const isClient = useSyncExternalStore(subscribeToClient, () => true, () => false);
-  const appState = useSyncExternalStore(subscribeToAppState, () => AppState.currentState, () => null);
+  const appActive = useAppActive();
   const [muted, setMuted] = useState(false);
+  const [musicSuspended, setMusicSuspended] = useState(false);
   const [ready, setReady] = useState(false);
   const playersRef = useRef<PlayerMap | null>(null);
   const storeRef = useRef<Awaited<ReturnType<typeof openStore>>['store'] | null>(null);
   const writesRef = useRef(Promise.resolve());
   const playbackRequest = useRef(0);
-  const enabled = ready && appState === 'active';
+  const enabled = ready && appActive;
 
   useEffect(() => {
     // Cancel native seeks pending across mute, background, or unmount.
@@ -135,7 +134,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AudioContext.Provider value={{ muted, ready, enabled, setMuted, playSound }}>
+    <AudioContext.Provider value={{ muted, ready, enabled, setMuted, playSound, musicSuspended, setMusicSuspended }}>
       {isClient ? <SoundPlayers playersRef={playersRef} enabled={enabled && !muted} /> : null}
       {children}
     </AudioContext.Provider>
