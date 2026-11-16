@@ -44,6 +44,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:web": "expo export --platform web",
+    "deploy:web": "node scripts/deploy-web.mjs",
     "lint": "eslint src",
     "test": "node --experimental-strip-types --test src/game/rules.test.ts tests/*.test.mjs",
     "typecheck": "tsc --noEmit",

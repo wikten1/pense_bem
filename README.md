@@ -23,6 +23,8 @@ Troque a plataforma por `ios` quando necessário. As pastas nativas geradas não
 
 ## Publicação web na Vercel
 
+Endereço público da demonstração: https://pense-bem-aladdin.vercel.app
+
 A versão web é uma aplicação estática, sem backend. `npm run build:web` exporta o site para `dist`; `vercel.json` configura o build e o redirecionamento das rotas do Expo Router, inclusive `/quiz/p1` e `/results/p1`, para a aplicação. O progresso fica no navegador de cada visitante e não é sincronizado entre dispositivos.
 
 Para testar a exportação localmente:
@@ -32,9 +34,18 @@ npm run build:web
 npx expo serve
 ```
 
-Para publicar, envie estas configurações ao GitHub e importe este repositório no painel da Vercel. Mantenha o framework como **Other**, o comando de build como `npm run build:web` e a pasta de saída como `dist`. A configuração está versionada em `vercel.json`; commits enviados à branch de produção passam a gerar novos deploys quando a integração com Git estiver conectada.
+O projeto `pense-bem` está configurado no workspace `wiktenalves-4190s-projects`. Para atualizar a demonstração, execute lint, typecheck e testes, salve as alterações em um commit e envie ao GitHub. Depois, autenticado na conta Vercel correta:
 
-Selecione o workspace pessoal no plano Hobby para uma demonstração gratuita. O plano gratuito tem limites de uso e é destinado a projetos pessoais e não comerciais. Prefira a integração com GitHub: os arquivos de áudio, vídeo e imagens deste projeto excedem o limite de 100 MB de envio de fontes pelo CLI no plano Hobby.
+```sh
+npx vercel@latest login
+npm run deploy:web
+```
+
+O script envia apenas a configuração de build. A Vercel baixa o commit atual do repositório público e executa `npm ci` e `npm run build:web`, sem precisar da integração GitHub. O script mostra o ID do deploy; acompanhe até o estado **Ready** pelo painel ou com `npx vercel@latest inspect <id>`. `npm run deploy:web -- --dry-run` mostra o commit e o destino sem publicar. O repositório precisa continuar público para esse método funcionar. Cada atualização exige executar o script; commits isolados não iniciam deploys automáticos.
+
+Para ativar deploys automáticos no futuro, conecte o repositório nas configurações Git do projeto na Vercel. Mantenha o framework como **Other**, o comando de build como `npm run build:web` e a pasta de saída como `dist`.
+
+O workspace utiliza o plano Hobby gratuito, com limites de uso e destinado a projetos pessoais e não comerciais. O build na nuvem evita enviar pelo CLI todos os arquivos de áudio, vídeo e imagens, que excedem o limite de 100 MB de envio de fontes no plano Hobby.
 
 Antes de compartilhar o link, teste a abertura e atualização das rotas, uma partida com salvamento e retomada, áudio após interação com a página e download do livro. Navegadores podem bloquear reprodução de áudio antes da primeira interação.
 
