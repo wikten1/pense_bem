@@ -2,8 +2,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { GoldButton, Panel } from '@/components/game/ui';
-import { ProgramScreen } from '@/components/game/program-screen';
+import { GoldButton, NightScreen, Panel } from '@/components/game/ui';
+import { IntroBackground, useScreenViewport } from '@/components/intro-background';
 import { CompletionVideo } from '@/components/completion-video';
 import { PASSWORD_NOTE, findProgram } from '@/game/rules';
 import { passwordFeedback } from '@/game/password-feedback';
@@ -11,6 +11,7 @@ import { useGame } from '@/state/GameProvider';
 import { colors, fonts, space } from '@/theme/tokens';
 
 export default function ResultsScreen() {
+  const { viewport, onLayout } = useScreenViewport();
   const { programId: rawId, celebrate } = useLocalSearchParams<{ programId: string; celebrate?: string }>();
   const [showCelebration, setShowCelebration] = useState(celebrate === '1');
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -28,7 +29,7 @@ export default function ResultsScreen() {
   }
 
   return (
-    <ProgramScreen programId={programId}>
+    <NightScreen backdrop={<IntroBackground viewport={viewport} />} onLayout={onLayout}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Text style={styles.kicker}>{entry?.pending ? 'Resultado parcial' : 'Resultado'}</Text>
         <Text style={styles.title}>{entry?.programTitle ?? program?.title ?? 'Programa'}</Text>
@@ -78,7 +79,7 @@ export default function ResultsScreen() {
       {ready && entry && showCelebration && (programId === 'p1' || programId === 'p2' || programId === 'p3' || programId === 'p4' || programId === 'p5' || programId === 'p6') ? (
         <CompletionVideo programId={programId} onFinish={() => setShowCelebration(false)} />
       ) : null}
-    </ProgramScreen>
+    </NightScreen>
   );
 }
 

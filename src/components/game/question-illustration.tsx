@@ -66,7 +66,7 @@ const images: Record<IllustrationId, number> = {
   filmmaking: require('../../../assets/images/questions/aladdin/filmmaking.lossless.webp'),
   'genie-sequence': require('../../../assets/images/questions/aladdin/genie-sequence.lossless.webp'),
   orchestra: require('../../../assets/images/questions/aladdin/orchestra.webp'),
-  'home-video': require('../../../assets/images/questions/aladdin/home-video.png'),
+  'home-video': require('../../../assets/images/questions/aladdin/home-video.jpg'),
 };
 
 export function QuestionIllustration({ illustration }: { illustration: Illustration }) {
