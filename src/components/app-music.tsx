@@ -87,8 +87,8 @@ export function AppMusic({ introVisible }: { introVisible: boolean }) {
 function MusicPlayer({ introVisible }: { introVisible: boolean }) {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
-  const programId = /^\/quiz\/([^/]+)$/.exec(pathname)?.[1];
-  const source = introVisible || pathname === '/' || pathname === '/programs' || pathname.startsWith('/results/')
+  const programId = /^\/(?:quiz|results)\/([^/]+)$/.exec(pathname)?.[1];
+  const source = introVisible || pathname === '/' || pathname === '/programs' || pathname === '/history'
     ? menuSource
     : (programId ? programSources[programId] : undefined) ?? null;
   const playerRef = useRef<AudioPlayer | null>(null);

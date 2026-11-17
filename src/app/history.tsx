@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { BackLink, GoldButton, NightScreen, Panel } from '@/components/game/ui';
 import { HistoryEntryCard } from '@/components/game/history-entry';
+import { IntroBackground, useScreenViewport } from '@/components/intro-background';
 import { PASSWORD_NOTE } from '@/game/rules';
 import { passwordFeedback as messages } from '@/game/password-feedback';
 import type { HistoryEntry } from '@/storage/game-save';
@@ -14,6 +15,7 @@ const renderEntry = ({ item }: { item: HistoryEntry }) => <HistoryEntryCard entr
 const entryKey = (entry: HistoryEntry) => entry.id;
 
 export default function HistoryScreen() {
+  const { viewport, onLayout } = useScreenViewport();
   const { ready, saveError, history, notaDesafio, ledger, redeem } = useGame();
   const [code, setCode] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export default function HistoryScreen() {
   }
 
   return (
-    <NightScreen>
+    <NightScreen backdrop={<IntroBackground viewport={viewport} />} onLayout={onLayout}>
       <BackLink label="Início" onPress={() => router.back()} />
       <FlatList
         data={history}
