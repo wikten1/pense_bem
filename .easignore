@@ -1,5 +1,7 @@
 # Keep the exclusions from .gitignore when preparing cloud builds.
 node_modules/
+/credentials.json
+/credentials/
 .expo/
 dist/
 web-build/

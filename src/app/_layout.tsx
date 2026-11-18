@@ -11,20 +11,37 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AppMusic } from '@/components/app-music';
 import { StartupVideo } from '@/components/startup-video';
-import { GameProvider } from '@/state/GameProvider';
-import { AudioProvider } from '@/state/AudioProvider';
+import { GameProvider, useGame } from '@/state/GameProvider';
+import { AudioProvider, useAppAudio } from '@/state/AudioProvider';
 import { colors } from '@/theme/tokens';
 
 void SplashScreen.preventAutoHideAsync().catch((error) => console.warn('Não foi possível manter a tela de abertura.', error));
 
 export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
+      <AudioProvider>
+        <GameProvider>
+          <AppContent />
+        </GameProvider>
+      </AudioProvider>
+    </GestureHandlerRootView>
+  );
+}
+
+function AppContent() {
   const [loaded, error] = useFonts({
     Cinzel_400Regular,
     Cinzel_600SemiBold,
     Cinzel_700Bold,
   });
   const [introHeld, setIntroHeld] = useState(false);
-  const appReady = loaded || error;
+  const [musicReady, setMusicReady] = useState(false);
+  const [musicError, setMusicError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const { ready: audioReady } = useAppAudio();
+  const { ready: gameReady } = useGame();
+  const appReady = (loaded || error) && audioReady && gameReady && musicReady && !musicError;
   const showIntro = !introHeld || !appReady;
 
   useEffect(() => {
@@ -39,24 +56,28 @@ export default function RootLayout() {
     setIntroHeld(true);
   }, []);
 
+  const finishMusic = useCallback(() => setMusicReady(true), []);
+  const failMusic = useCallback(() => setMusicError(true), []);
+  const retryMusic = useCallback(() => {
+    setMusicError(false);
+    setMusicReady(false);
+    setAttempt((current) => current + 1);
+  }, []);
+
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
-      <AudioProvider>
-        {appReady ? (
-          <GameProvider>
-            <StatusBar style="light" hidden={showIntro} />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: colors.background },
-                animation: 'fade',
-              }}
-            />
-          </GameProvider>
-        ) : null}
-        {showIntro ? <StartupVideo onReady={hideSplash} onFinish={finishIntro} /> : null}
-        <AppMusic introVisible={showIntro} />
-      </AudioProvider>
-    </GestureHandlerRootView>
+    <>
+      <StatusBar style="light" hidden={showIntro} />
+      {!showIntro ? (
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: colors.background },
+            animation: 'fade',
+          }}
+        />
+      ) : null}
+      {showIntro ? <StartupVideo onReady={hideSplash} onFinish={finishIntro} loadError={musicError} onRetry={retryMusic} /> : null}
+      <AppMusic introVisible={showIntro} attempt={attempt} onReady={finishMusic} onError={failMusic} />
+    </>
   );
 }

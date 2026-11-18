@@ -1,0 +1,17 @@
+import groovy.json.JsonSlurper
+
+// Apply EAS signing credentials only to this local invocation.
+gradle.beforeProject { project ->
+    project.afterEvaluate {
+        if (project.path == ':app') {
+            def root = project.rootDir.parentFile
+            def credentials = new JsonSlurper().parse(new File(root, 'credentials.json')).android.keystore
+            def signing = project.android.signingConfigs.maybeCreate('localProduction')
+            signing.storeFile = new File(root, credentials.keystorePath)
+            signing.storePassword = credentials.keystorePassword
+            signing.keyAlias = credentials.keyAlias
+            signing.keyPassword = credentials.keyPassword
+            project.android.buildTypes.release.signingConfig = signing
+        }
+    }
+}

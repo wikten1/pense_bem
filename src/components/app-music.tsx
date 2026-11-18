@@ -1,30 +1,21 @@
 import { useAudioPlayer, useAudioPlayerStatus, type AudioPlayer } from 'expo-audio';
 import { usePathname } from 'expo-router';
-import { useEffect, useRef, useSyncExternalStore, type RefObject } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
 import { Platform, Pressable, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppAudio } from '@/state/AudioProvider';
+import { loadMusicAssets, menuSource, programSources } from '@/services/music-assets';
 import { colors, space } from '@/theme/tokens';
 
-const menuSource = require('../../assets/audios/musica_aladin.mp3');
-const quiz01Source = require('../../assets/audios/livro01.mp3');
-const quiz02Source = require('../../assets/audios/livro02.mp3');
-const quiz03Source = require('../../assets/audios/livro03.mp3');
-const quiz04Source = require('../../assets/audios/livro04.mp3');
-const quiz05Source = require('../../assets/audios/livro05.mp3');
-const quiz06Source = require('../../assets/audios/musica 07.mp3');
-const practiceSource = require('../../assets/audios/musica 08.mp3');
-const programSources: Partial<Record<string, number>> = {
-  p1: quiz01Source,
-  p2: quiz02Source,
-  p3: quiz03Source,
-  p4: quiz04Source,
-  p5: quiz05Source,
-  p6: quiz06Source,
-  practice: practiceSource,
-};
 const subscribeToClient = () => () => {};
+
+type AppMusicProps = {
+  introVisible: boolean;
+  attempt: number;
+  onReady: () => void;
+  onError: () => void;
+};
 
 function configurePlayer(player: AudioPlayer, muted: boolean) {
   player.loop = true;
@@ -32,22 +23,30 @@ function configurePlayer(player: AudioPlayer, muted: boolean) {
   player.muted = muted;
 }
 
-function MusicTrack({ source, muted, enabled, playerRef }: {
-  source: number;
+function MusicTrack({ source, muted, enabled, preparing, playerRef, onReady, onError }: {
+  source: { uri: string };
   muted: boolean;
   enabled: boolean;
+  preparing: boolean;
   playerRef: RefObject<AudioPlayer | null>;
+  onReady: () => void;
+  onError: () => void;
 }) {
-  // Cache Android assets locally to avoid streaming interruptions from Metro.
-  const player = useAudioPlayer(source, { downloadFirst: Platform.OS === 'android', updateInterval: 1000 });
+  const player = useAudioPlayer(source, { updateInterval: 1000 });
   const { error: playbackError, isLoaded } = useAudioPlayerStatus(player);
   const shouldPlay = enabled && !muted;
 
   useEffect(() => {
     if (playbackError) {
       console.warn('Não foi possível reproduzir a música do app.', playbackError);
+      // Browser autoplay restrictions are playback errors, not download failures.
+      if (preparing && !isLoaded) onError();
     }
-  }, [playbackError]);
+  }, [isLoaded, onError, playbackError, preparing]);
+
+  useEffect(() => {
+    if (isLoaded) onReady();
+  }, [isLoaded, onReady]);
 
   useEffect(() => {
     playerRef.current = player;
@@ -78,13 +77,14 @@ function MusicTrack({ source, muted, enabled, playerRef }: {
   return null;
 }
 
-export function AppMusic({ introVisible }: { introVisible: boolean }) {
+export function AppMusic(props: AppMusicProps) {
   // Audio playback requires browser APIs that are unavailable during web SSR.
   const isClient = useSyncExternalStore(subscribeToClient, () => true, () => false);
-  return isClient ? <MusicPlayer introVisible={introVisible} /> : null;
+  return isClient ? <MusicPlayer {...props} /> : null;
 }
 
-function MusicPlayer({ introVisible }: { introVisible: boolean }) {
+function MusicPlayer({ introVisible, attempt, onReady, onError }: AppMusicProps) {
+  const [assets, setAssets] = useState<Awaited<ReturnType<typeof loadMusicAssets>> | null>(null);
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const programId = /^\/(?:quiz|results)\/([^/]+)$/.exec(pathname)?.[1];
@@ -94,13 +94,26 @@ function MusicPlayer({ introVisible }: { introVisible: boolean }) {
   const playerRef = useRef<AudioPlayer | null>(null);
   const { muted, setMuted, ready, enabled, playSound, musicSuspended } = useAppAudio();
 
+  useEffect(() => {
+    let active = true;
+    void loadMusicAssets().then((loaded) => {
+      if (active) setAssets(loaded);
+    }).catch((error) => {
+      console.warn('Não foi possível carregar as músicas do app.', error);
+      if (active) onError();
+    });
+    return () => { active = false; };
+  }, [attempt, onError]);
+
+  const audioSource = source === null ? undefined : assets?.get(source);
+
   return (
     <>
-      {/* Release the previous decoder instead of loading every book at startup. */}
-      {source !== null ? (
-        <MusicTrack key={source} source={source} muted={muted} enabled={enabled && !musicSuspended} playerRef={playerRef} />
+      {/* All files are cached; only the current track needs a decoder. */}
+      {audioSource ? (
+        <MusicTrack key={`${source}:${attempt}`} source={audioSource} muted={muted} enabled={enabled && !musicSuspended && !introVisible} preparing={introVisible} playerRef={playerRef} onReady={onReady} onError={onError} />
       ) : null}
-      <Pressable
+      {!introVisible ? <Pressable
         accessibilityRole="switch"
         accessibilityLabel="Música e efeitos sonoros"
         accessibilityHint={muted ? 'Ativar a música e os efeitos dos botões' : 'Silenciar a música e os efeitos dos botões'}
@@ -124,7 +137,7 @@ function MusicPlayer({ introVisible }: { introVisible: boolean }) {
         ]}>
         <Text style={styles.icon} accessibilityElementsHidden importantForAccessibility="no">{muted ? '♪̸' : '♫'}</Text>
         <Text style={styles.label}>{muted ? 'Ativar som' : 'Silenciar'}</Text>
-      </Pressable>
+      </Pressable> : null}
     </>
   );
 }

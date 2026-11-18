@@ -1,6 +1,6 @@
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useCallback, useEffect, useRef } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/theme/tokens';
 import { useAppActive } from '@/hooks/use-app-active';
@@ -13,9 +13,11 @@ const source = require('../../assets/videos/Mobile_app_loading_720.mp4');
 type StartupVideoProps = {
   onReady: () => void;
   onFinish: () => void;
+  loadError: boolean;
+  onRetry: () => void;
 };
 
-export function StartupVideo({ onReady, onFinish }: StartupVideoProps) {
+export function StartupVideo({ onReady, onFinish, loadError, onRetry }: StartupVideoProps) {
   const appActive = useAppActive();
   const started = useRef(false);
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -66,6 +68,21 @@ export function StartupVideo({ onReady, onFinish }: StartupVideoProps) {
         playsInline
         onFirstFrameRender={begin}
       />
+      <View style={styles.status}>
+        {loadError ? (
+          <>
+            <Text accessibilityRole="alert" style={styles.message}>Não foi possível carregar as músicas.</Text>
+            <Pressable accessibilityRole="button" onPress={onRetry} style={styles.retry}>
+              <Text style={styles.message}>Tentar novamente</Text>
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <ActivityIndicator color={colors.goldLight} />
+            <Text accessibilityLiveRegion="polite" style={styles.message}>Carregando músicas…</Text>
+          </>
+        )}
+      </View>
     </View>
   );
 }
@@ -78,5 +95,27 @@ const styles = StyleSheet.create({
   },
   video: {
     flex: 1,
+  },
+  status: {
+    position: 'absolute',
+    bottom: '10%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: colors.backgroundDeep,
+  },
+  message: {
+    color: colors.goldLight,
+    textAlign: 'center',
+  },
+  retry: {
+    minHeight: 48,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.gold,
+    borderRadius: 24,
   },
 });
